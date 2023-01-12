@@ -124,12 +124,9 @@ class User {
 
   // data = req.body
   static async updateUserProfile(username, reqData){
-    // validate the password matches the db pw to submit changes.
-    if(data.password){
-      // re-assign the data.password to the hashed version for comparison
-      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
-    } else {
-      throw new ExpressError("Password incorrect. Please resubmit with valid password.")
+    // re-assign the reqData.password to the hashed version for storing
+    if(reqData.password){
+      reqData.password = await bcrypt.hash(reqData.password, BCRYPT_WORK_FACTOR);
     };
 
     // destructures return object. Ex: 
@@ -137,6 +134,7 @@ class User {
     // values: ["SoftwareDevUser1", "9165286431"] }
     const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData, {
       username: "username",
+      password: "password",
       contact_num: "contact_num",
       contact_email: "contact_email",
       type_of_user: "type_of_user",
@@ -173,26 +171,22 @@ class User {
   // Delete account. AUTH REQUIRED. Deletes user if the username + password are valid. Otherwise throws BadRequestError notifying user to check spelling and try again.
 
   static async deleteUser(username, password){
-    let authUser = await this.authenticateUser(username, password);
 
-    // if we get a user back we can send off the db deletion request.
-    if(authUser){
       let deleteRequest = await db.query(
         `DELETE 
         FROM users
-        WHERE username = $1
+        WHERE username = $1 AND password = $2
         RETURNING username`, 
-        [username]
+        [username, password]
       );
 
       let deletedUserConfirmation = deleteRequest.result.rows[0];
 
       // if(!deletedUserConfirmation) throw new ExpressError("Invalid username or password. Please check your spelling and try again.")
+      if(!deletedUserConfirmation) console.log("Password or username invalid. Line 192.");
 
-      console.log("Password or username invalid. Line 192.")
-
-    }
-  }
+      // nothing is returned. The route redirects to login pg.
+  };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
