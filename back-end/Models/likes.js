@@ -26,16 +26,37 @@ class Like {
 
   static async getUserLiked({liker_username}){
 
-    let userLiked = await db.query(
+    let userLikedReq = await db.query(
       `SELECT liked_username
             FROM likes
             WHERE liker_username = $1`,
             [liker_username]
     );
-
-    if(!userLiked) console.log("Should it throw an error? No likes in db.")
-    return userLiked.result.rows;
+    
+    let userLiked = userLikedReq.result.rows;
+    if(!userLiked) console.log("User has not liked any users.")
+    return userLiked;
   };
+
+    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  // View users who have liked username. AUTH REQUIRED. Returns liker_usernames.
+
+  static async getUsersWhoLikedUser({username}){
+
+    let usersWhoLikedUserReq = await db.query(
+      `SELECT liker_username
+            FROM likes
+            WHERE liked_username = $1`,
+            [username]
+    );
+
+    let usersWhoLikedUser = usersWhoLikedUserReq.result.rows;
+
+    if(!usersWhoLikedUser) console.log("User has not been liked by others.")
+    return usersWhoLikedUser;
+  };
+  // select liker usernamewhere liked_username = username
 
 
 
