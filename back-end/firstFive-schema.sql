@@ -1,6 +1,6 @@
 CREATE TABLE users (
   username VARCHAR(25) PRIMARY KEY,
-  user_password TEXT NOT NULL,
+  password TEXT NOT NULL,
   contact_num TEXT NOT NULL,
   contact_email TEXT NOT NULL,
   type_of_user TEXT NOT NULL,

@@ -62,13 +62,11 @@ class Company_request {
     // check join structure here
 
     let singleCoReq = await db.query(
-      `SELECT cr.id AS id,
-              u.co_username AS co_username, 
-              cr.project_desc AS project_desc, 
-              cr.timeframe AS timeframe, 
-              cr.searching_for_professional AS searching_for_professional
-      FROM company_requests AS cr
-        JOIN users AS u ON cr.co_username = u.username
+      `SELECT co_username, 
+              project_desc, 
+              timeframe, 
+              searching_for_professional
+      FROM company_requests 
       WHERE request_id = $1`,
       [request_id]
     );
