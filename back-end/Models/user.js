@@ -194,4 +194,6 @@ class User {
 
   // static async likeCompanyRequest()
 
-}
+};
+
+module.exports = User;

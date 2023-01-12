@@ -136,5 +136,7 @@ class Company_request {
   };
 
   // class end bracket
-}
+};
+
+module.exports = Company_request;
 
