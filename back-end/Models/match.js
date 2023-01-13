@@ -72,4 +72,22 @@ class Matches {
     return projectUserMatches.result.rows;
   };
 
+    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  // Remove match for username. Returns error is unsuccessful, otherwise no return value.
+
+  static async unmatchUser({username, project_id}){
+
+    let unmatchReq = await db.query(
+      `DELETE 
+      FROM matches
+      WHERE username = $1 AND project_id = $2
+      RETURNING project_id`,
+      [username, project_id]
+    );
+
+    let unmatchConfirmation = unmatchReq.result.rows[0];
+
+    if(!unmatchConfirmation) throw new ExpressError("Unable to complete deletion request.");
+  };
 }
