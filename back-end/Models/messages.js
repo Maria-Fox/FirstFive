@@ -1,5 +1,5 @@
 const db = require("../db");
-
+const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
 
 class Message {
 
@@ -41,8 +41,7 @@ class Message {
     );
 
     let userMessages = allUserMessagesReq.result.rows;
-
-    if(!userMessages) console.log("No messages returned. What if there are no msg. how do I distringuish from an error?");
+    if(!userMessages) throw new ExpressError("No messages, yer!");
 
     return userMessages;
   };
@@ -85,8 +84,7 @@ class Message {
       // SELECT (message_from, message_to, body, sent_at) FROM messages WHERE id = 1;
 
       let message = messageSearchReq.result.rows[0];
-      // if(!message) throw new ExpressError("Message does not exist.", 404)
-      if(!message) console.log("Should throw NotFoundError");
+      if(!message) throw new NotFoundError("Message does not exist.", 404)
 
       // returning structured object w/ destructed message content
       return {
@@ -124,9 +122,7 @@ class Message {
 
     let updatedMessage = message.result.rows[0];
 
-    // if(!updatedMessage) throw new ExpressError("Message does not exist.", 404);
-    if(!updatedMessage) console.log("Should throw express error message id does not exist.");
-
+    if(!updatedMessage) throw new NotFoundError("Message does not exist.", 404);
     return updatedMessage;
 
     };

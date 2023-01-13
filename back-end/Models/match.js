@@ -1,4 +1,5 @@
 const db = require("../db");
+const {ExpressError} = require("../ErrorHandling/expressError");
 
 
 class Matches {
@@ -39,8 +40,7 @@ class Matches {
         [username]
     );
 
-    // if(!userMatches.result.rows) throw new ExpressError("You have no matches!");
-    if(!userMatches.result.rows) console.log("There are no matches.")
+    if(!userMatches.result.rows) throw new ExpressError("You have no matches!");
 
     return userMatches.result.rows;
   };
@@ -66,8 +66,7 @@ class Matches {
         [project_id]
     );
 
-    // if(!projectUserMatches.result.rows) throw new ExpressError("You have no matches!");
-    if(!projectUserMatches.result.rows) console.log("There are no matches.")
+    if(!projectUserMatches.result.rows) throw new ExpressError("Project has no matches at this time. Check back later!");
 
     return projectUserMatches.result.rows;
   };

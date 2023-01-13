@@ -1,8 +1,8 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const {BCRYPT_WORK_FACTOR} = require("../config");
-const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers")
-// const {BadRequestError, NotFoundError, ExpressError} = require("../ErrorHandling")
+const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
+const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
 
 class User {
   // Primary key of username. Uses parameterized queries to prevent SQL injection.
@@ -23,8 +23,7 @@ class User {
 
       // If there is a row returned user exists. Send user error.
       if(existingUserCheck.rows[0]){
-        // throw new BadRequestError("Username already exists. Please choose a new username.")
-        console.log("Username already exists. Choose a new one.")
+        throw new BadRequestError("Username already exists. Please choose a new username.");
       };
 
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
@@ -66,11 +65,9 @@ class User {
       // remove hashed password and return the user info.
         delete user.password;
         return user;
-      }
-    }
-
-    console.log("Incorrect username or password")
-    // throw new BadRequestError("Incorrect username or password.")
+      };
+    };
+    throw new BadRequestError("Incorrect username or password.");
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -113,8 +110,7 @@ class User {
 
       
     } else {
-      console.log("No user error")
-      // throw new NotFoundError(`${username} does not exist. Please update your search.`)
+      throw new NotFoundError(`${username} does not exist. Please update your search.`);
     }
   };
 
@@ -157,8 +153,7 @@ class User {
     let updateResult = await db.query(sqlSyntaxQuery, [...values, username]);
     let user = updateResult.rows[0];
 
-    // if(!user) throw new NotFoundError(`No user found. Please check your spelling and try again.`)
-    console.log("No user was found line 165.")
+    if(!user) throw new NotFoundError(`No user found. Please check your spelling and try again.`);
 
     delete user.password;
     return user;
@@ -180,18 +175,10 @@ class User {
 
       let deletedUserConfirmation = deleteRequest.result.rows[0];
 
-      // if(!deletedUserConfirmation) throw new ExpressError("Invalid username or password. Please check your spelling and try again.")
-      if(!deletedUserConfirmation) console.log("Password or username invalid. Line 192.");
+      if(!deletedUserConfirmation) throw new ExpressError("Invalid username or password. Please check your spelling and try again.")
 
       // nothing is returned. The route redirects to login pg.
   };
-
-  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-
-  // Like a companyRequest. AUTH REQUIRED. 
-
-  // static async likeCompanyRequest()
-
 };
 
 module.exports = User;

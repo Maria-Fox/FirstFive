@@ -1,13 +1,13 @@
 const { resourceLimits } = require("worker_threads");
 const db = require("../db");
 const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
-// const {BadRequestError, NotFoundError, ExpressError} = require("../ErrorHandling")
+const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
 
 class Project {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Create a unque project. AUTH REQUIRED. Returns  id, owner_username, name, project desc, timeframe.
+  // Create a unique project. AUTH REQUIRED. Returns id, owner_username, name, project desc, timeframe.
 
   static async createProject({owner_username, name, project_desc, timeframe}) {
 
@@ -20,8 +20,7 @@ class Project {
 
     let newRequest = newProjectReq.result.rows[0];
 
-    // if(!newRequest) throw new ExpressError("Project name already exists. Try a new project name!")
-    if(!newRequest) console.log("Project name already exists. Please update the name, or choose a new project to propose.")
+    if(!newRequest) throw new ExpressError("Project name already exists. lease update the name, or choose a new project to propose!");
 
     return newRequest;
   };
@@ -43,9 +42,7 @@ class Project {
 
     let allProjects = projectReq.result.rows;
 
-    // if(!allRequests) throw new ExpressErro("Something went wrong- please try again.");
-
-    if(!allRequests) console.log("There are no projects OR omething went wrong.");
+    if(!allRequests) throw new ExpressErro("There are no projects, yet! Propose a new project.");
 
     return allProjects;
   };
@@ -71,8 +68,7 @@ class Project {
 
     let singleProjReq = singleCoReq.results.row[0];
 
-    // if(!singleProjReq) throw new NotFoundError("No such project exists.)"";
-    if(!singleProjReq) console.log("Invalid co. id");
+    if(!singleProjReq) throw new NotFoundError("No such project exists.");
     return singleCoReqData;
   };
 
@@ -110,8 +106,7 @@ class Project {
 
     let updatedProjData = updatedProjRequest.result.rows[0];
 
-    // if(!updatedProjData) throw new NotFoundError(`Project request does not exist.`);
-    if(!updatedProjData) console.group("Logging- no co request w/ given id")
+    if(!updatedProjData) throw new NotFoundError(`Project request does not exist.`);
     return updatedProjData;
   };
 
@@ -130,13 +125,8 @@ class Project {
     );
 
     let deletionConfirmation = deleteRequest.result.rows[0];
-    // if(!deletionConfirmation) throw new ExpressError("Invalid delete request.")
-    if(!deletionConfirmation) console.log("Should see ExpressError- fails to delete.");
+    if(!deletionConfirmation) throw new NotFoundError("Invalid delete request.");
   };
-
-  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-
-  // View project memebrs if matched. AUTH REQUIRED.
 
   // class end bracket
 };

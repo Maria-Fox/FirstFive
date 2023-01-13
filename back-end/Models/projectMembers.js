@@ -1,4 +1,5 @@
 const db = require("../db");
+const { NotFoundError } = require("../ErrorHandling/ExpressError");
 
 class Project_Member {
 
@@ -33,7 +34,7 @@ class Project_Member {
     );
 
     let deletionConfirmation = deleteMemberReq.result.rows[0];
-    if(!deletionConfirmation) return new ExpressError(`Porject or username do not exist. Unable to delte.`)
+    if(!deletionConfirmation) return new NotFoundError(`Porject or username do not exist. Unable to delte.`)
   };
 
 
