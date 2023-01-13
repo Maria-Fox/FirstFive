@@ -24,7 +24,7 @@ CREATE TABLE messages (
 CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
   owner_username TEXT NOT NULL REFERENCES users on DELETE CASCADE,
-  name TEXT NOT NULL,
+  name TEXT UNIQUE NOT NULL,
   project_desc TEXT NOT NULL,
   timeframe TEXT NOT NULL
 );
