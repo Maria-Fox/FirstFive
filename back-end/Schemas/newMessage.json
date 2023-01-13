@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "New Msg Schema",
+  "required": [
+      "message_from",
+      "message_to",
+      "body"
+  ],
+  "properties": {
+      "message_from": {
+          "type": "string",
+          "default": "",
+          "title": "The message_from Schema",
+          "examples": [
+              "softwareDev1"
+          ]
+      },
+      "message_to": {
+          "type": "string",
+          "default": "",
+          "title": "The message_to Schema",
+          "examples": [
+              "uxDesProf"
+          ]
+      },
+      "body": {
+          "type": "string",
+          "default": "",
+          "title": "The body Schema",
+          "examples": [
+              "content of msg here"
+          ]
+      }
+  },
+  "examples": [{
+      "message_from": "softwareDev1",
+      "message_to": "uxDesProf",
+      "body": "content of msg here"
+  }]
+}
+

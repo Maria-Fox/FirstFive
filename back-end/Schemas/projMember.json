@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Project member Schema - creating or deleting",
+    "required": [
+        "project_id",
+        "username"
+    ],
+    "properties": {
+        "project_id": {
+            "type": "integer",
+            "default": 0,
+            "title": "The project_id Schema",
+            "examples": [
+                1
+            ]
+        },
+        "username": {
+            "type": "string",
+            "default": "",
+            "title": "The username Schema",
+            "examples": [
+                "softwareDev1"
+            ]
+        }
+    },
+    "examples": [{
+        "project_id": 1,
+        "username": "softwareDev1"
+    }]
+}
