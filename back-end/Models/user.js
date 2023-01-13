@@ -12,7 +12,7 @@ class User {
 
   // Creates new user. NO AUTH REQUIRED. Returns newUser or BadRequestError if existing user has the given username.
 
-  static async register({username, password, contact_num, contact_email, type_of_user, bio}){
+  static async register({username, password, contact_num, contact_email, bio}){
 
     // check whether username already exists
     let existingUserCheck = await db.query(
@@ -32,10 +32,10 @@ class User {
       // if there is no existing user row create a new user w/ info passed in & HASHED PW.
       let newUserResult = await db.query(
         `INSERT INTO users 
-        (username, password, contact_num, contact_email, type_of_user, bio)
-        VALUES($1, $2, $3, $4, $5, $6) 
-        RETURNING username, password, contact_num, contact_email, type_of_user, bio`, 
-        [username, hashedPassword, contact_num, contact_email, type_of_user, bio ] 
+        (username, password, contact_num, contact_email, bio)
+        VALUES($1, $2, $3, $4, $5) 
+        RETURNING username, password, contact_num, contact_email, bio`, 
+        [username, hashedPassword, contact_num, contact_email,bio ] 
       );
 
       const newUser = newUserResult.rows[0];
@@ -75,12 +75,12 @@ class User {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Find ALL users. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, type_of_user, bio.
+  // Find ALL users. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, bio.
 
   static async findAllUsers(){
 
       let allUsersResult = await db.query(
-        `SELECT username, contact_num, contact_email, type_of_user, bio
+        `SELECT username, contact_num, contact_email, bio
         FROM users 
         ORDER BY username`
       );
@@ -100,7 +100,7 @@ class User {
       `SELECT username
       FROM users 
       WHERE username = $1 
-      RETURNING username, contact_num, contact_email, type_of_user, bio`, [username]
+      RETURNING username, contact_num, contact_email, bio`, [username]
     );
 
     let validUser = foundUser.rows[0]
@@ -120,7 +120,7 @@ class User {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Update user details pased on submission. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, type_of_user, bio.
+  // Update user details pased on submission. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, bio.
 
   // data = req.body
   static async updateUserProfile(username, reqData){
@@ -137,7 +137,6 @@ class User {
       password: "password",
       contact_num: "contact_num",
       contact_email: "contact_email",
-      type_of_user: "type_of_user",
       bio: "bio"
     });
 
@@ -152,7 +151,6 @@ class User {
                       username AS "username",
                       contact_num AS "contact_num",
                       contact_email AS "contact_email",
-                      type_of_user AS "type_of_user",
                       bio AS "bio"
                   `;
 
