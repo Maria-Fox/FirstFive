@@ -31,7 +31,10 @@ class Message {
     let allUserMessagesReq = await db.query(
       `SELECT id,
               message_from, 
-              message_to
+              message_to,
+              body,
+              sent_at,
+              read_at
       FROM messages
       WHERE message_from = $1 OR message_to = $2`,
       [username, username]
@@ -62,7 +65,7 @@ class Message {
     );
       // `SELECT m.id,
       //         m.message_from,
-      //         f.username AS message_from
+      //         f.username AS message_from,
       //         f.contact_email AS from_contact_email,
       //         f.contact_num AS from_contact_num
       //         m.message_to,
