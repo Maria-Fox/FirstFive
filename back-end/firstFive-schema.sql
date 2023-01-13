@@ -3,19 +3,8 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   contact_num TEXT NOT NULL,
   contact_email TEXT NOT NULL,
-  type_of_user TEXT NOT NULL,
-  bio TEXT
+  bio TEXT 
 );
-
-CREATE TABLE company_requests (
-  id SERIAL PRIMARY KEY,
-  co_username TEXT NOT NULL
-    REFERENCES users ON DELETE CASCADE, 
-  project_desc TEXT NOT NULL,
-  timeframe TEXT NOT NULL,
-  searching_for_professional TEXT NOT NULL
-);
-
 
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
@@ -26,8 +15,28 @@ CREATE TABLE messages (
   read_at timestamp with time zone
 );
 
-CREATE TABLE likes (
+-- CREATE TABLE likes (
+--   id SERIAL PRIMARY KEY,
+--   liker_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE,
+--   liked_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE
+-- );
+
+CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
-  liker_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE,
-  liked_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE
+  owner_username TEXT NOT NULL REFERENCES users on DELETE CASCADE,
+  name TEXT NOT NULL,
+  project_desc TEXT NOT NULL,
+  timeframe TEXT NOT NULL
+);
+
+CREATE TABLE project_members(
+  id SERIAL PRIMARY KEY,
+  project_id INT NOT NULL REFERENCES projects ON DELETE CASCADE,
+  username TEXT NOT NULL REFERENCES users on DELETE CASCADE
+);
+
+CREATE TABLE matches (
+  id SERIAL PRIMARY KEY,
+  project_id INT NOT NULL REFERENCES projects ON DELETE CASCADE,
+  username TEXT NOT NULL REFERENCES users ON DELETE CASCADE
 );
