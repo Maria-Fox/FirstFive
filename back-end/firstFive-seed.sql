@@ -39,3 +39,5 @@ VALUES ('softwareDev1',
               'Beautifully design an interface for smart TV platforms. Include comprehnsive resting for all devices.',
               '3-6 months'
           );
+
+-- INSERT INTO matches (project_id, username) VALUES (3, 'bestUxDesigner')

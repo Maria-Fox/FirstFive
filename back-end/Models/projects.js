@@ -9,13 +9,13 @@ class Project {
 
   // Create a unque project. AUTH REQUIRED. Returns  id, owner_username, name, project desc, timeframe.
 
-  static async createProject({username, name, project_desc, timeframe}) {
+  static async createProject({owner_username, name, project_desc, timeframe}) {
 
     let newProjectReq = await db.query(
       `INSERT INTO projects
       VALUES($1, $2 ,$3, $4)
       RETURNING id, owner_username, project_desc, timeframe`, 
-      [username, name, project_desc, timeframe]
+      [owner_username, name, project_desc, timeframe]
     );
 
     let newRequest = newProjectReq.result.rows[0];
@@ -133,6 +133,10 @@ class Project {
     // if(!deletionConfirmation) throw new ExpressError("Invalid delete request.")
     if(!deletionConfirmation) console.log("Should see ExpressError- fails to delete.");
   };
+
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  // View project memebrs if matched. AUTH REQUIRED.
 
   // class end bracket
 };
