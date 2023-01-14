@@ -11,7 +11,8 @@ const jsonschema = require("jsonschema");
 
 // All routes are prefixed with "/users"
 
-// THIS IS GIVING ME THE FOLLOWING ERR: error: column   of relation "users" does not exist
+// THIS IS GIVING ME THE FOLLOWING ERR: "column \"email\" of relation \"users\" does not exist",
+
 router.post("/register", async function (req,res, next){
   try {
     let fieldInputs = jsonschema.validate(req.body, registerUserSchema);

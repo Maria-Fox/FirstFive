@@ -7,7 +7,6 @@ const {ExpressError, NotFoundError, BadRequestError} = require("../ErrorHandling
 class User {
   // Primary key of username. Uses parameterized queries to prevent SQL injection.
 
-
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // Creates new user. NO AUTH REQUIRED. Returns newUser or BadRequestError if existing user has the given username.
@@ -31,6 +30,7 @@ class User {
 
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
       console.log("we got to hash pw")
+
       // if there is no existing user create a new user w/ info passed in & HASHED PW (not the original unhashed pw).
       let newUserResult = await db.query(
         `INSERT INTO users 
