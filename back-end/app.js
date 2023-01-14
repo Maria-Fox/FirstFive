@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const authRoutes = require("./routes/userAuth");
+const authRoutes = require("./Routes/userAuth");
 const {ExpressError} = require("./ErrorHandling/expressError");
 
 app.use(express.json());
