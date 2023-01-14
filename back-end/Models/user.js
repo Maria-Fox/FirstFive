@@ -12,7 +12,6 @@ class User {
   // Creates new user. NO AUTH REQUIRED. Returns newUser or BadRequestError if existing user has the given username.
 
   static async register({username, password, email, bio}){
-    console.log("Received :", username, password, email, bio);
 
     // check whether username already exists in db.
     let existingUserCheck = await db.query(
@@ -21,15 +20,12 @@ class User {
       WHERE username = $1`, [username]
       );
 
-      console.log("*********", existingUserCheck);
-
       // If there is a row returned user exists. Send user error.
       if(existingUserCheck.rows[0]){
         throw new BadRequestError("Username already exists. Please choose a new username.");
       };
 
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-      console.log("we got to hash pw")
 
       // if there is no existing user create a new user w/ info passed in & HASHED PW (not the original unhashed pw).
       let newUserResult = await db.query(
@@ -40,8 +36,8 @@ class User {
         [username, hashedPassword, email, bio]
       );
 
-      const newUser = newUserResult.rows[0];
-      return newUser;
+      const newUserData = newUserResult.rows[0];
+      return newUserData;
   };
 
    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -49,7 +45,6 @@ class User {
   // Authenticate given username & password against db. NO AUTH REQUIRED. Returns error if input does not match db information.
 
   static async authenticateUser({username, password}){
-    console.log("models sees the name & pw", username, password)
 
     // confirm there is a user w/ given username first
     let usernameExists = await db.query(
@@ -60,7 +55,6 @@ class User {
     );
 
     let user = usernameExists.rows[0];
-    console.log("User info is: ", user)
 
     if(user){
       // if there is a user compare the given pw against the hashed pw stored in the user.database

@@ -23,7 +23,7 @@ router.post("/register", async function (req,res, next){
     };
 
     const newUser = await User.register(req.body);
-    return res.status(201).json({"newAcct": newUser});
+    return res.status(201).json({"user": newUser});
   } catch (e) {
     return next(e);
   };
@@ -37,7 +37,6 @@ router.post("/login", async function (req, res ,next){
       let inputErrors = fieldInputs.errors.map(e => e.stack);
       throw new BadRequestError(inputErrors);
     };
-    console.log("/login. The username and password are:", req.body)
 
     let authUser = await User.authenticateUser(req.body);
     return res.status(200).json({"validUser": authUser})
