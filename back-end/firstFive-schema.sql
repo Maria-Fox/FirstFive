@@ -1,8 +1,7 @@
 CREATE TABLE users (
   username VARCHAR(25) PRIMARY KEY,
   password TEXT NOT NULL,
-  contact_num TEXT NOT NULL,
-  contact_email TEXT NOT NULL,
+  email TEXT NOT NULL,
   bio TEXT 
 );
 

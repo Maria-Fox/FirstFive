@@ -2,7 +2,7 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const {BCRYPT_WORK_FACTOR} = require("../config");
 const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
-const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
+const {ExpressError, NotFoundError, BadRequestError} = require("../ErrorHandling/expressError");
 
 class User {
   // Primary key of username. Uses parameterized queries to prevent SQL injection.
@@ -12,14 +12,17 @@ class User {
 
   // Creates new user. NO AUTH REQUIRED. Returns newUser or BadRequestError if existing user has the given username.
 
-  static async register({username, password, contact_num, contact_email, bio}){
+  static async register({username, password, email, bio}){
+    console.log("Received :", username, password, email, bio);
 
-    // check whether username already exists
+    // check whether username already exists in db.
     let existingUserCheck = await db.query(
       `SELECT username 
       FROM users
       WHERE username = $1`, [username]
       );
+
+      console.log("*********", existingUserCheck);
 
       // If there is a row returned user exists. Send user error.
       if(existingUserCheck.rows[0]){
@@ -27,14 +30,14 @@ class User {
       };
 
       let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-
-      // if there is no existing user row create a new user w/ info passed in & HASHED PW.
+      console.log("we got to hash pw")
+      // if there is no existing user create a new user w/ info passed in & HASHED PW (not the original unhashed pw).
       let newUserResult = await db.query(
         `INSERT INTO users 
-        (username, password, contact_num, contact_email, bio)
-        VALUES($1, $2, $3, $4, $5) 
-        RETURNING username, password, contact_num, contact_email, bio`, 
-        [username, hashedPassword, contact_num, contact_email,bio ] 
+        (username, password, email, bio)
+        VALUES($1, $2, $3, $4) 
+        RETURNING username, password, email, bio`, 
+        [username, hashedPassword, email, bio]
       );
 
       const newUser = newUserResult.rows[0];
@@ -45,26 +48,28 @@ class User {
 
   // Authenticate given username & password against db. NO AUTH REQUIRED. Returns error if input does not match db information.
 
-  static async authenticateUser({username, givenPassword}){
+  static async authenticateUser({username, password}){
+    console.log("models sees the name & pw", username, password)
 
     // confirm there is a user w/ given username first
-
-    let userConfirmation = await db.query(
-      `SELECT username
+    let usernameExists = await db.query(
+      `SELECT username,
+              password
       FROM users
       WHERE username = $1`, [username]
     );
 
-    let user = userConfirmation.rows[0];
+    let user = usernameExists.rows[0];
+    console.log("User info is: ", user)
 
     if(user){
       // if there is a user compare the given pw against the hashed pw stored in the user.database
-      let passwordMatch = await bcrypt.compare(givenPassword, user.password);
+      let passwordMatch = await bcrypt.compare(password, user.password);
 
       if(passwordMatch === true){
       // remove hashed password and return the user info.
-        delete user.password;
-        return user;
+      delete user.password;
+      return user;
       };
     };
     throw new BadRequestError("Incorrect username or password.");
@@ -72,12 +77,12 @@ class User {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Find ALL users. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, bio.
+  // Find ALL users. AUTH REQUIRED. Returns user's: username, email, bio.
 
   static async findAllUsers(){
 
       let allUsersResult = await db.query(
-        `SELECT username, contact_num, contact_email, bio
+        `SELECT username, email, bio
         FROM users 
         ORDER BY username`
       );
@@ -94,10 +99,11 @@ class User {
   static async findUser({username}){
 
     let foundUser = await db.query(
-      `SELECT username
+      `SELECT username,
+              bio
       FROM users 
-      WHERE username = $1 
-      RETURNING username, contact_num, contact_email, bio`, [username]
+      WHERE username = $1`,
+      [username]
     );
 
     let validUser = foundUser.rows[0]
@@ -107,8 +113,6 @@ class User {
       // MAYBE SEE IF YOU WANT TO DISPLAY LIKES?
       return validUser;
 
-
-      
     } else {
       throw new NotFoundError(`${username} does not exist. Please update your search.`);
     }
@@ -116,7 +120,7 @@ class User {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Update user details pased on submission. AUTH REQUIRED. Returns user's: username, contact_num, contact_email, bio.
+  // Update user details pased on submission. AUTH REQUIRED. Returns user's: username, email, bio.
 
   // data = req.body
   static async updateUserProfile(username, reqData){
@@ -126,13 +130,12 @@ class User {
     };
 
     // destructures return object. Ex: 
-    // { dbColumnsToUpdate: '"username"=$1, "contact_num"=$2',
+    // { dbColumnsToUpdate: '"username"=$1,  =$2',
     // values: ["SoftwareDevUser1", "9165286431"] }
     const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData, {
       username: "username",
       password: "password",
-      contact_num: "contact_num",
-      contact_email: "contact_email",
+      email: "email",
       bio: "bio"
     });
 
@@ -145,10 +148,8 @@ class User {
                   WHERE username = ${usernameVarIndex}
                   RETURNING 
                       username AS "username",
-                      contact_num AS "contact_num",
-                      contact_email AS "contact_email",
-                      bio AS "bio"
-                  `;
+                      email AS "email",
+                      bio AS "bio"`;
 
     let updateResult = await db.query(sqlSyntaxQuery, [...values, username]);
     let user = updateResult.rows[0];
@@ -173,10 +174,9 @@ class User {
         [username, password]
       );
 
-      let deletedUserConfirmation = deleteRequest.result.rows[0];
+      let deletedUserConfirmation = deleteRequest.rows[0];
 
       if(!deletedUserConfirmation) throw new ExpressError("Invalid username or password. Please check your spelling and try again.")
-
       // nothing is returned. The route redirects to login pg.
   };
 };

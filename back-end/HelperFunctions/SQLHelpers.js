@@ -21,8 +21,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   );
 
   // returns a single obj with two keys {setCols, dataToUpdate}. Set Cols: every column needing an update (and varaible index). Values, corresponding values to column edit.
-//  @example {username: "SoftwareDevUser1", contact_num: "9165286431"} =>
-//  *   { dbColumnsToUpdate: '"username"=$1, "contact_num"=$2',
+//  @example {username: "SoftwareDevUser1",  : "9165286431"} =>
+//  *   { dbColumnsToUpdate: '"username"=$1,  =$2',
 //  *     values: ["SoftwareDevUser1", "9165286431"] }
 
 // readies the arameterized query syntax

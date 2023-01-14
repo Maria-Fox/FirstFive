@@ -19,7 +19,7 @@ class Message {
           RETURNING id, message_from, message_to, body, sent_at`,
         [message_from, message_to, body]);
 
-    return newMessage.result.rows[0];
+    return newMessage.rows[0];
   };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -28,7 +28,7 @@ class Message {
 
   static async getAllMessages({username}){
     // something here
-    let allUserMessagesReq = await db.query(
+    let allUserMessagesResult = await db.query(
       `SELECT id,
               message_from, 
               message_to,
@@ -40,7 +40,7 @@ class Message {
       [username, username]
     );
 
-    let userMessages = allUserMessagesReq.result.rows;
+    let userMessages = allUserMessagesResult.rows;
     if(!userMessages) throw new ExpressError("No messages, yer!");
 
     return userMessages;
@@ -52,7 +52,7 @@ class Message {
 
   static async viewMessageID({id}){
 
-    const messageSearchReq = await db.query(
+    const messageSearchResult = await db.query(
       `SELECT message_from,
               message_to,
               body,
@@ -65,12 +65,12 @@ class Message {
       // `SELECT m.id,
       //         m.message_from,
       //         f.username AS message_from,
-      //         f.contact_email AS from_contact_email,
-      //         f.contact_num AS from_contact_num
+      //         f.email AS from_email,
+      //         f.  AS from_ 
       //         m.message_to,
       //         t.username AS message_to,
-      //         t.contact_email AS to_contact_email,
-      //         t.contact_num AS to_contact_num,
+      //         t.email AS to_email,
+      //         t.  AS to_ ,
       //         m.body,
       //         m.sent_at,
       //         m.read_at
@@ -83,26 +83,27 @@ class Message {
       // unsure if I even need to join. Look into this...
       // SELECT (message_from, message_to, body, sent_at) FROM messages WHERE id = 1;
 
-      let message = messageSearchReq.result.rows[0];
+      let message = messageSearchResult.rows[0];
       if(!message) throw new NotFoundError("Message does not exist.", 404)
 
       // returning structured object w/ destructed message content
-      return {
-        id: message.id,
-        from_user : {
-          username : message.message_from,
-          contact_email: message.from_contact_email,
-          contact_num: message.from_contact_num
-        },
-        to_user: {
-          username: message.message_to,
-          contact_email: message.to_message_email,
-          contact_num: message.to_contact_num
-        },
-        body: message.body,
-        sent_at: message.sent_at,
-        read_at: message.read_at
-      }
+      // return {
+      //   id: message.id,
+      //   from_user : {
+      //     username : message.message_from,
+      //     email: message.from_email,
+      //      : message.from_ 
+      //   },
+      //   to_user: {
+      //     username: message.message_to,
+      //     email: message.to_message_email,
+      //      : message.to_ 
+      //   },
+      //   body: message.body,
+      //   sent_at: message.sent_at,
+      //   read_at: message.read_at
+      // }
+      return message;
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -112,7 +113,7 @@ class Message {
   static async markMessageRead({id}){
 
     // using SQL timestamp function returns date time
-    let message = await db. query (
+    let messageReadResult = await db. query (
       `UPDATE messages
       SET read_at = $1
       WHERE id = $2
@@ -120,7 +121,7 @@ class Message {
       [current_timestamp, id]
     );
 
-    let updatedMessage = message.result.rows[0];
+    let updatedMessage = messageReadResult.rows[0];
 
     if(!updatedMessage) throw new NotFoundError("Message does not exist.", 404);
     return updatedMessage;

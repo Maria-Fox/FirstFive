@@ -11,18 +11,18 @@ class Project {
 
   static async createProject({owner_username, name, project_desc, timeframe}) {
 
-    let newProjectReq = await db.query(
+    let newProjectRes = await db.query(
       `INSERT INTO projects
       VALUES($1, $2 ,$3, $4)
       RETURNING id, owner_username, project_desc, timeframe`, 
       [owner_username, name, project_desc, timeframe]
     );
 
-    let newRequest = newProjectReq.result.rows[0];
+    let newProject = newProjectRes.rows[0];
 
-    if(!newRequest) throw new ExpressError("Project name already exists. lease update the name, or choose a new project to propose!");
+    if(!newProject) throw new ExpressError("Project name already exists. lease update the name, or choose a new project to propose!");
 
-    return newRequest;
+    return newProject;
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -30,7 +30,7 @@ class Project {
   // View all projects. AUTH REQUIRED. Returns id, owner_username, name, project_desc, and timeframe.
 
   static async viewAllProjects(){
-    let projectReq = await db.query(
+    let projectResults = await db.query(
       `SELECT id,
               owner_username, 
               name,
@@ -40,9 +40,9 @@ class Project {
       ORDER BY name`
     );
 
-    let allProjects = projectReq.result.rows;
+    let allProjects = projectResults.rows;
 
-    if(!allRequests) throw new ExpressErro("There are no projects, yet! Propose a new project.");
+    if(!allRequests) throw new ExpressError("There are no projects, yet! Propose a new project.");
 
     return allProjects;
   };
@@ -55,7 +55,7 @@ class Project {
 
     // check join structure here
 
-    let singleCoReq = await db.query(
+    let singleProjResult = await db.query(
       `SELECT id,
               owner_username, 
               name,
@@ -66,10 +66,10 @@ class Project {
       [id]
     );
 
-    let singleProjReq = singleCoReq.results.row[0];
+    let singleProjData = singleProjResult.rows[0];
 
-    if(!singleProjReq) throw new NotFoundError("No such project exists.");
-    return singleCoReqData;
+    if(!singleProjData) throw new NotFoundError("No such project exists.");
+    return singleProjData;
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -77,7 +77,7 @@ class Project {
   // Update single project proposal. AUTH REQUIRED. Returns updated request
   // owner_username, name, project_desc, timeframe.
 
-  static async updateCoRequest({id, reqData }){
+  static async updateProjectRequest({id, reqData }){
 
     // returns detrsuctured object where dbColumnsToUpdate holds parameterized queries. EX: dbColumnsToUpdate{project_desc = $1} 
     const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData, {
@@ -102,9 +102,9 @@ class Project {
     ;
 
     // send off the db request to update adding in values & the actual co_username. Last to be added so it's the values.length+1
-    let updatedProjRequest = await db.query(sqlSyntaxQuery, [...values, request_id_Index])
+    let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, request_id_Index])
 
-    let updatedProjData = updatedProjRequest.result.rows[0];
+    let updatedProjData = updatedProjResult.rows[0];
 
     if(!updatedProjData) throw new NotFoundError(`Project request does not exist.`);
     return updatedProjData;
@@ -116,7 +116,7 @@ class Project {
 
   static async deleteProjRequest({username, id}){
 
-    let deleteRequest = await db.query(
+    let deletionResult = await db.query(
       `DELETE 
       FROM projects
       WHERE id = $1 AND owner_username = $2
@@ -124,7 +124,7 @@ class Project {
       [id, username]
     );
 
-    let deletionConfirmation = deleteRequest.result.rows[0];
+    let deletionConfirmation = deletionResult.rows[0];
     if(!deletionConfirmation) throw new NotFoundError("Invalid delete request.");
   };
 

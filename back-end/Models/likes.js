@@ -19,7 +19,7 @@ class Like {
       [liker_username, liked_username]
     );
 
-    return newLike.result.rows[0];
+    return newLike.rows[0];
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -35,7 +35,7 @@ class Like {
             [liker_username]
     );
     
-    let userLiked = userLikedReq.result.rows;
+    let userLiked = userLikedReq.rows;
     if(!userLiked) console.log("User has not liked any users.")
     return userLiked;
   };
@@ -53,7 +53,7 @@ class Like {
             [username]
     );
 
-    let usersWhoLikedUser = usersWhoLikedUserReq.result.rows;
+    let usersWhoLikedUser = usersWhoLikedUserReq.rows;
 
     if(!usersWhoLikedUser) console.log("User has not been liked by others.")
     return usersWhoLikedUser;

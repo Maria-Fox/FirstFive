@@ -3,12 +3,11 @@
     "$id": "http://example.com/example.json",
     "type": "object",
     "default": {},
-    "title": "Root Schema",
+    "title": "Register new user Schema",
     "required": [
         "username",
         "password",
-        "contact_num",
-        "contact_email",
+        "email",
         "bio"
     ],
     "properties": {
@@ -28,15 +27,7 @@
                 "pw12345667"
             ]
         },
-        "contact_num": {
-            "type": "string",
-            "default": "",
-            "title": "The contact_num Schema",
-            "examples": [
-                "9165289461"
-            ]
-        },
-        "contact_email": {
+        "email": {
             "type": "string",
             "default": "",
             "title": "The contact_email Schema",
@@ -56,8 +47,7 @@
     "examples": [{
         "username": "softwareDev1",
         "password": "pw12345667",
-        "contact_num": "9165289461",
-        "contact_email": "bestemail@aol.com",
+        "email": "bestemail@aol.com",
         "bio": "Best software dev in the area!"
     }]
 }

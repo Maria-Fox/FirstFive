@@ -9,14 +9,14 @@ class Project_Member {
 
   static async addMember ({project_id, username}){
 
-    let newMemberReq = await db.query(
+    let newMemberResult = await db.query(
       `INSERT INTO project_members (project_id, username) 
       VALUES project_id = $1, username =$2
       RETURNING id, project_id, username`,
       [project_id, username]
     );
 
-    return newProjMember = newMemberReq.result.rows[0];
+    return newProjMember = newMemberResult.rows[0];
   };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -25,7 +25,7 @@ class Project_Member {
 
   static async deleteMember ({project_id, username}){
 
-    let deleteMemberReq = await db.query(
+    let deleteMemberResult = await db.query(
       `DELETE 
       FROM prroject_members
       WHERE project_id = $1 AND username =$2
@@ -33,7 +33,7 @@ class Project_Member {
       [project_id, username]
     );
 
-    let deletionConfirmation = deleteMemberReq.result.rows[0];
+    let deletionConfirmation = deleteMemberResult.rows[0];
     if(!deletionConfirmation) return new NotFoundError(`Porject or username do not exist. Unable to delte.`)
   };
 

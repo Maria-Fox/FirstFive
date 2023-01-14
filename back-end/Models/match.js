@@ -17,7 +17,7 @@ class Matches {
       [project_id, username]
     );
 
-    return newMatch.result.rows[0];
+    return newMatch.rows[0];
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -40,9 +40,9 @@ class Matches {
         [username]
     );
 
-    if(!userMatches.result.rows) throw new ExpressError("You have no matches!");
+    if(!userMatches.rows) throw new ExpressError("You have no matches!");
 
-    return userMatches.result.rows;
+    return userMatches.rows;
   };
 
 
@@ -66,9 +66,9 @@ class Matches {
         [project_id]
     );
 
-    if(!projectUserMatches.result.rows) throw new ExpressError("Project has no matches at this time. Check back later!");
+    if(!projectUserMatches.rows) throw new ExpressError("Project has no matches at this time. Check back later!");
 
-    return projectUserMatches.result.rows;
+    return projectUserMatches.rows;
   };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -77,7 +77,7 @@ class Matches {
 
   static async unmatchUser({username, project_id}){
 
-    let unmatchReq = await db.query(
+    let unmatchResult = await db.query(
       `DELETE 
       FROM matches
       WHERE username = $1 AND project_id = $2
@@ -85,7 +85,7 @@ class Matches {
       [username, project_id]
     );
 
-    let unmatchConfirmation = unmatchReq.result.rows[0];
+    let unmatchConfirmation = unmatchResult.rows[0];
 
     if(!unmatchConfirmation) throw new ExpressError("Unable to complete deletion request.");
   };

@@ -12,7 +12,7 @@ class ExpressError extends Error {
 
 class BadRequestError extends ExpressError{
   constructor(message = "Bad Request"){
-  super(message, 403)};
+  super(message, 400)};
 };
 
 // 401- Extends ExpressError class to return UnauthorizedError.
