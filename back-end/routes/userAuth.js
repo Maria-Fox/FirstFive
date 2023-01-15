@@ -7,11 +7,13 @@ let authenticateUserSchema = require("../Schemas/loginUser.json");
 const { json, Router } = require("express");
 const {BadRequestError} = require("../ErrorHandling/expressError");
 const jsonschema = require("jsonschema");
+const createJWTToken = require("../HelperFunctions/Tokens");
 
 
 // All routes are prefixed with "/users"
 
-// THIS IS GIVING ME THE FOLLOWING ERR: "column \"email\" of relation \"users\" does not exist",
+
+// takes in username, password, email, bio. Adds data to db returns user.
 
 router.post("/register", async function (req,res, next){
   try {
@@ -23,11 +25,15 @@ router.post("/register", async function (req,res, next){
     };
 
     const newUser = await User.register(req.body);
-    return res.status(201).json({"user": newUser});
+    // using the newUser data we create and sign a JsonWebToken & return this to the front-end to hold in local storage
+    const signedJWT = createJWTToken(newUser);
+    return res.status(201).json({signedJWT});
   } catch (e) {
     return next(e);
   };
 });
+
+// Requires username & password. Returns/ signs jsonWebToken for front-end to store in local storage.
 
 router.post("/login", async function (req, res ,next){
   try {
@@ -39,17 +45,13 @@ router.post("/login", async function (req, res ,next){
     };
 
     let authUser = await User.authenticateUser(req.body);
-    return res.status(200).json({"validUser": authUser})
+    let signedJWT = createJWTToken(authUser);
+    return res.status(200).json({signedJWT})
     // 
   } catch (e){
     return next(e);
   }
 
 });
-
-
-
-
-
 
 module.exports = router;

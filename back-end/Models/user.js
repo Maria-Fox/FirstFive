@@ -37,6 +37,7 @@ class User {
       );
 
       const newUserData = newUserResult.rows[0];
+      delete newUserData.password;
       return newUserData;
   };
 
