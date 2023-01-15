@@ -9,9 +9,7 @@ const {BadRequestError} = require("../ErrorHandling/expressError");
 const jsonschema = require("jsonschema");
 const createJWTToken = require("../HelperFunctions/Tokens");
 
-
-// All routes are prefixed with "/users"
-
+// All routes are prefixed with "/users". NO AUTH required.
 
 // takes in username, password, email, bio. Adds data to db returns user.
 
