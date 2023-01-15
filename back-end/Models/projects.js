@@ -1,7 +1,7 @@
 const { resourceLimits } = require("worker_threads");
 const db = require("../db");
 const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
-const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
+const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
 
 class Project {
 
@@ -35,14 +35,14 @@ class Project {
               owner_username, 
               name,
               project_desc, 
-              timeframe, 
+              timeframe
       FROM projects
       ORDER BY name`
     );
 
     let allProjects = projectResults.rows;
 
-    if(!allRequests) throw new ExpressError("There are no projects, yet! Propose a new project.");
+    if(!projectResults) throw new ExpressError("There are no projects, yet! Propose a new project.");
 
     return allProjects;
   };

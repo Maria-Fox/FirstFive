@@ -3,7 +3,7 @@ const {SECRET_KEY} = require("../config");
 
 // returns signs JWT. Holds username.
 
-function createJWTToken(user){
+function createJWT(user){
   let payload = {
     username: user.username
   };
@@ -11,4 +11,6 @@ function createJWTToken(user){
   return jwt.sign(payload, SECRET_KEY);
 };
 
-module.exports = createJWTToken;
+module.exports = createJWT;
+
+// Token is later added to req header. {Authorization: token}

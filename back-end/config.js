@@ -10,7 +10,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "firstFive_secret_key";
 const BCRYPT_WORK_FACTOR = 12;
 
 module.exports = {
-  SECRET_KEY,
-  BCRYPT_WORK_FACTOR,
-  getApproporiateDBURI
+  SECRET_KEY: SECRET_KEY,
+  BCRYPT_WORK_FACTOR: BCRYPT_WORK_FACTOR,
+  getApproporiateDBURI: getApproporiateDBURI
 };

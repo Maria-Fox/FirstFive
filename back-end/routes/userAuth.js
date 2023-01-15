@@ -7,9 +7,9 @@ let authenticateUserSchema = require("../Schemas/loginUser.json");
 const { json, Router } = require("express");
 const {BadRequestError} = require("../ErrorHandling/expressError");
 const jsonschema = require("jsonschema");
-const createJWTToken = require("../HelperFunctions/Tokens");
+const  createJWT = require("../HelperFunctions/Tokens");
 
-// All routes are prefixed with "/users". NO AUTH required.
+// All routes are prefixed with "/auth". NO AUTH required.
 
 // takes in username, password, email, bio. Adds data to db returns user.
 
@@ -24,7 +24,7 @@ router.post("/register", async function (req,res, next){
 
     const newUser = await User.register(req.body);
     // using the newUser data we create and sign a JsonWebToken & return this to the front-end to hold in local storage
-    const signedJWT = createJWTToken(newUser);
+    const signedJWT =  createJWT(newUser);
     return res.status(201).json({signedJWT});
   } catch (e) {
     return next(e);
@@ -43,12 +43,12 @@ router.post("/login", async function (req, res ,next){
     };
 
     let authUser = await User.authenticateUser(req.body);
-    let signedJWT = createJWTToken(authUser);
+    let signedJWT =  createJWT(authUser);
     return res.status(200).json({signedJWT})
     // 
   } catch (e){
     return next(e);
-  }
+  };
 
 });
 

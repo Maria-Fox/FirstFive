@@ -1,12 +1,22 @@
 const express = require('express');
 const app = express();
+const cors = require("cors");
 const authRoutes = require("./Routes/userAuth");
+const projectRoutes = require("./Routes/projects");
 const {ExpressError} = require("./ErrorHandling/expressError");
+const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
 
 app.use(express.json());
+// enables preflight requests // use of middleware with cross-origin resource sharing
+app.use(cors());
+app.use(authenticateJWT);
+
 
 // app use this prefix for routes in this file.
 app.use("/auth", authRoutes);
+app.use("/projects", projectRoutes);
+
+
 
 app.get("/works", async function (req,res,err){
   return res.json({"worked": "like a charm"})
