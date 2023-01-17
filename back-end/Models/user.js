@@ -124,37 +124,32 @@ class User {
       reqData.password = await bcrypt.hash(reqData.password, BCRYPT_WORK_FACTOR);
     };
 
-
-    // { dbColumnsToUpdate: '"username"=$1,  email=$2',
-    // values: ["SoftwareDevUser1", "updated@email.com"] }
+    // destructures return object. Ex: 
+    // { dbColumnsToUpdate: '"username"=$1,  =$2',
+    // values: ["SoftwareDevUser1", "9165286431"] }
     const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
-
-    console.log("dbColumnsToUpdate: ", dbColumnsToUpdate, "values", values)
 
     // should the user not update the username we still need to submit a query w/ variable input. Adding one since it's an additional param.
     const usernameVarIndex = "$"+(values.length +1);
-    console.log(usernameVarIndex);
-    console.log(username.username, "**********")
 
     let sqlSyntaxQuery = `
                   UPDATE users
                   SET ${dbColumnsToUpdate} 
                   WHERE username = ${usernameVarIndex}
-                  RETURNING username,
-                            email,
-                            bio`;
+                  RETURNING 
+                      username,
+                      email,
+                      bio`;
 
-    console.log(sqlSyntaxQuery, [...values, username.username]);
+    // console.log(sqlSyntaxQuery, [...values, username.username]);
 
     let updateResult = await db.query(sqlSyntaxQuery, [...values, username.username]);
 
-    console.log("the updated result is: ", updateResult.rows[0]);
-
     let user = updateResult.rows[0];
-    console.log(user)
 
     if(!user) throw new NotFoundError(`No user found. Please check your spelling and try again.`);
 
+    delete user.password;
     return user;
   };
 
