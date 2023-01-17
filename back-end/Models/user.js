@@ -1,7 +1,7 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const {BCRYPT_WORK_FACTOR} = require("../config");
-const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
+const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
 const {ExpressError, NotFoundError, BadRequestError} = require("../ErrorHandling/expressError");
 
 class User {
@@ -82,8 +82,7 @@ class User {
         ORDER BY username`
       );
 
-      let allUsers = allUsersResult.rows;
-      
+      let allUsers = allUsersResult.rows;      
       return allUsers;
   };
 
@@ -92,6 +91,7 @@ class User {
   // Find user based on username. AUTH REQUIRED. Returns user details or no user found Error.
 
   static async findUser({username}){
+    console.log(username)
 
     let foundUser = await db.query(
       `SELECT username,
@@ -117,41 +117,44 @@ class User {
 
   // Update user details pased on submission. AUTH REQUIRED. Returns user's: username, email, bio.
 
-  // data = req.body
+  // reqData = req.body
   static async updateUserProfile(username, reqData){
     // re-assign the reqData.password to the hashed version for storing
     if(reqData.password){
       reqData.password = await bcrypt.hash(reqData.password, BCRYPT_WORK_FACTOR);
     };
 
-    // destructures return object. Ex: 
-    // { dbColumnsToUpdate: '"username"=$1,  =$2',
-    // values: ["SoftwareDevUser1", "9165286431"] }
-    const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData, {
-      username: "username",
-      password: "password",
-      email: "email",
-      bio: "bio"
-    });
+
+    // { dbColumnsToUpdate: '"username"=$1,  email=$2',
+    // values: ["SoftwareDevUser1", "updated@email.com"] }
+    const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
+
+    console.log("dbColumnsToUpdate: ", dbColumnsToUpdate, "values", values)
 
     // should the user not update the username we still need to submit a query w/ variable input. Adding one since it's an additional param.
     const usernameVarIndex = "$"+(values.length +1);
+    console.log(usernameVarIndex);
+    console.log(username.username, "**********")
 
     let sqlSyntaxQuery = `
                   UPDATE users
                   SET ${dbColumnsToUpdate} 
                   WHERE username = ${usernameVarIndex}
-                  RETURNING 
-                      username AS "username",
-                      email AS "email",
-                      bio AS "bio"`;
+                  RETURNING username,
+                            email,
+                            bio`;
 
-    let updateResult = await db.query(sqlSyntaxQuery, [...values, username]);
+    console.log(sqlSyntaxQuery, [...values, username.username]);
+
+    let updateResult = await db.query(sqlSyntaxQuery, [...values, username.username]);
+
+    console.log("the updated result is: ", updateResult.rows[0]);
+
     let user = updateResult.rows[0];
+    console.log(user)
 
     if(!user) throw new NotFoundError(`No user found. Please check your spelling and try again.`);
 
-    delete user.password;
     return user;
   };
 

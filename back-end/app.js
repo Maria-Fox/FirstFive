@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 const authRoutes = require("./Routes/userAuth");
+const userRoutes = require("./Routes/user");
 const projectRoutes = require("./Routes/projects");
 const {ExpressError} = require("./ErrorHandling/expressError");
 const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
@@ -14,6 +15,7 @@ app.use(authenticateJWT);
 
 // app use this prefix for routes in this file.
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 
 

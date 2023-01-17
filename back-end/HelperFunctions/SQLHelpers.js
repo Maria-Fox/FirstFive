@@ -1,8 +1,7 @@
-// const {BadRequestError} = require("../ErrorHandling");
-
 // dataToUpdate is an obj. (req.body )
-// jsToSql : object, specify which items to update to SQL. Already in JS format.
-function sqlForPartialUpdate(dataToUpdate, jsToSql) {
+
+function sqlForPartialUpdate(dataToUpdate) {
+  console.log("updating:", dataToUpdate)
 
   // We're grabbing the keys (from req.body) and assigning to variable "keys". Returns an array of keys.
   // console.log(dataToUpdate);
@@ -17,15 +16,15 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   const columnsToUpdate = keys.map((colName, idx) =>
       // param. queries are one-indexed so we add one at the start.
-      `"${jsToSql[colName] || colName}"=$${idx + 1}`,
+      `"${colName}"=$${idx + 1}`,
   );
 
   // returns a single obj with two keys {setCols, dataToUpdate}. Set Cols: every column needing an update (and varaible index). Values, corresponding values to column edit.
 //  @example {username: "SoftwareDevUser1",  : "9165286431"} =>
-//  *   { dbColumnsToUpdate: '"username"=$1,  =$2',
-//  *     values: ["SoftwareDevUser1", "9165286431"] }
+//  *   { dbColumnsToUpdate: "username"=$1 , "email" = $2},
+//  *     values: ["SoftwareDevUser1", "newEmail@updated.com"] }
 
-// readies the arameterized query syntax
+// ready the parameterized queries
   return {
     dbColumnsToUpdate: columnsToUpdate.join(", "),
     values: Object.values(dataToUpdate),
