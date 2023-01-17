@@ -48,7 +48,17 @@ function ensureLoggedIn(req, res, next){
 };
 
 
+function ensureAuthUser(req, res, next){
+  if(res.locals.user.username == req.params.username){
+    return next();
+  } else {
+    throw new UnauthorizedError();
+  }
+};
+
+
 module.exports = {
   authenticateJWT,
-  ensureLoggedIn
+  ensureLoggedIn,
+  ensureAuthUser
 };

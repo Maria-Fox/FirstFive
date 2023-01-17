@@ -157,14 +157,14 @@ class User {
 
   // Delete account. AUTH REQUIRED. Deletes user if the username + password are valid. Otherwise throws BadRequestError notifying user to check spelling and try again.
 
-  static async deleteUser(username, password){
+  static async deleteUser({username}){
 
       let deleteRequest = await db.query(
         `DELETE 
         FROM users
-        WHERE username = $1 AND password = $2
+        WHERE username = $1 
         RETURNING username`, 
-        [username, password]
+        [username]
       );
 
       let deletedUserConfirmation = deleteRequest.rows[0];
