@@ -17,7 +17,7 @@ VALUES ('softwareDev1',
         'Just starting out my software journey! I would like to join a small project with React.'
         );
 
-  INSERT INTO projects(owner_username, name, project_desc, timeframe) 
+  INSERT INTO projects(owner_username, name, project_desc, timeframe, project_repo) 
   VALUES ('softwareDev1',
             'React Card Game',
             'Build out a fully featured React app using a deck API chosen by the group! Open to other additional technologies.',

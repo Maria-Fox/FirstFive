@@ -1,6 +1,6 @@
 const { resourceLimits } = require("worker_threads");
 const db = require("../db");
-const {sqlForPartialUpdate} = require("../HelperFunctions/SQLHelpers");
+const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
 const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
 
 class Project {
@@ -10,11 +10,17 @@ class Project {
   // Create a unique project. AUTH REQUIRED. Returns id, owner_username, name, project desc, timeframe.
 
   static async createProject({owner_username, name, project_desc, timeframe}) {
+    console.log(owner_username)
 
     let newProjectRes = await db.query(
-      `INSERT INTO projects
-      VALUES($1, $2 ,$3, $4)
-      RETURNING id, owner_username, project_desc, timeframe`, 
+      `INSERT INTO projects(owner_username, name, project_desc, timeframe)
+      VALUES($1, $2, $3, $4)
+      RETURNING 
+            id, 
+            owner_username, 
+            name, 
+            project_desc, 
+            timeframe`, 
       [owner_username, name, project_desc, timeframe]
     );
 
@@ -35,7 +41,8 @@ class Project {
               owner_username, 
               name,
               project_desc, 
-              timeframe
+              timeframe, 
+              project_repo
       FROM projects
       ORDER BY name`
     );
@@ -51,19 +58,18 @@ class Project {
 
   // View single project proposal. AUTH REQUIRED. Returns project id, owner_username, name, project_desc, timeframe.
 
-  static async viewSingleProject({id}){
-
-    // check join structure here
+  static async viewSingleProject({project_id}){
+    console.log("VIEWING ***", project_id)
 
     let singleProjResult = await db.query(
       `SELECT id,
               owner_username, 
               name,
               project_desc, 
-              timeframe, 
+              timeframe
       FROM projects 
       WHERE id = $1`,
-      [id]
+      [project_id]
     );
 
     let singleProjData = singleProjResult.rows[0];
@@ -77,32 +83,28 @@ class Project {
   // Update single project proposal. AUTH REQUIRED. Returns updated request
   // owner_username, name, project_desc, timeframe.
 
-  static async updateProjectRequest({id, reqData }){
+  static async updateProject(project_id, reqData){
 
     // returns detrsuctured object where dbColumnsToUpdate holds parameterized queries. EX: dbColumnsToUpdate{project_desc = $1} 
-    const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData, {
-      owner_username: "owner_username",
-      name: "name",
-      project_desc: "project_desc",
-      timeframe: "timeframe",
-    });
+    const {dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
 
-    let request_id_Index = "$" + (values.length+1); 
+    let proj_id_Index = "$" + (values.length+1); 
 
     // build the sytntax popping in the columns to update & the owner_username index.
     let sqlSyntaxQuery = 
       `UPDATE projects
       SET ${dbColumnsToUpdate}
-      WHERE request_id = ${request_id_Index}
+      WHERE id = ${proj_id_Index} 
       RETURNING 
-        owner_username AS owner_username, 
-        name AS name,
-        project_desc AS project_desc, 
-        timeframe AS timeframe`
-    ;
+        id, 
+        owner_username, 
+        name,
+        project_desc, 
+        timeframe, 
+        project_repo`;
 
     // send off the db request to update adding in values & the actual co_username. Last to be added so it's the values.length+1
-    let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, request_id_Index])
+    let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, project_id.project_id])
 
     let updatedProjData = updatedProjResult.rows[0];
 
@@ -114,18 +116,24 @@ class Project {
 
   // Delete single project proposal. AUTH REQUIRED. If invalid throws error, otherwise nothing is returned.
 
-  static async deleteProjRequest({username, id}){
+  static async delete(project_id, username){
+    console.log("DELETING:", project_id)
+
+    // Route confirmation method is only accessed by username
 
     let deletionResult = await db.query(
       `DELETE 
       FROM projects
       WHERE id = $1 AND owner_username = $2
       RETURNING owner_username`,
-      [id, username]
+      [project_id, username]
     );
 
     let deletionConfirmation = deletionResult.rows[0];
+
     if(!deletionConfirmation) throw new NotFoundError("Invalid delete request.");
+
+    return deletionConfirmation
   };
 
   // class end bracket

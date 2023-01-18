@@ -25,7 +25,8 @@ CREATE TABLE projects (
   owner_username TEXT NOT NULL REFERENCES users on DELETE CASCADE,
   name TEXT UNIQUE NOT NULL,
   project_desc TEXT NOT NULL,
-  timeframe TEXT NOT NULL
+  timeframe TEXT NOT NULL,
+  project_repo URL
 );
 
 CREATE TABLE project_members(
