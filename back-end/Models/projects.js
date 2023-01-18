@@ -105,7 +105,7 @@ class Project {
         name,
         project_desc, 
         timeframe, 
-        project_repo`;
+        github_repo`;
 
     // send off the db request to update adding in values & the actual co_username. Last to be added so it's the values.length+1
     let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, project_id.project_id])
