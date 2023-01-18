@@ -26,7 +26,7 @@ CREATE TABLE projects (
   name TEXT UNIQUE NOT NULL,
   project_desc TEXT NOT NULL,
   timeframe TEXT NOT NULL,
-  project_repo URL
+  github_repo TEXT 
 );
 
 CREATE TABLE project_members(

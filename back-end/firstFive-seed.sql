@@ -17,23 +17,27 @@ VALUES ('softwareDev1',
         'Just starting out my software journey! I would like to join a small project with React.'
         );
 
-  INSERT INTO projects(owner_username, name, project_desc, timeframe, project_repo) 
+  INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo) 
   VALUES ('softwareDev1',
             'React Card Game',
             'Build out a fully featured React app using a deck API chosen by the group! Open to other additional technologies.',
-            'Hoping to start asap, project can take a month.'), 
+            'Hoping to start asap, project can take a month.',
+            'https://github.com/'), 
           ('uxDesProf',
             'Re-design an existing e-commerce website.',
             'Re-design amazon, or target /any larger online corporation.',
-            'Depending on how many changes, perhaps 1-2 months.'),
+            'Depending on how many changes, perhaps 1-2 months.',
+            'https://github.com/'),
           ('bestUxDesigner',
             'Mock SaaS Dashboard',
             'Design a SaaS dashboard showing account overview, stats, etc.',
-            '2-3 months, unsure.'),
+            '2-3 months, unsure.',
+            'https://github.com/'),
           ('Delia_Designs',
               'Design a smart TV APP layout ',
               'Beautifully design an interface for smart TV platforms. Include comprehnsive resting for all devices.',
-              '3-6 months'
+              '3-6 months',
+              'https://github.com/'
           );
 
 -- INSERT INTO matches (project_id, username) VALUES (3, 'bestUxDesigner');

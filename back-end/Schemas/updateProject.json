@@ -40,12 +40,21 @@
           "examples": [
               "3-6 months"
           ]
+      },
+      "github_repo": {
+          "type": "string",
+          "default": "",
+          "title": "The project_repo Schema",
+          "examples": [
+              "https://github.com/Maria-Fox/FirstFive"
+          ]
       }
   },
   "examples": [{
       "owner_username": "Delia_Designs",
       "name": "Design a smart TV APP layout ",
       "project_desc": "Beautifully design an interface for smart TV platforms. Include comprehnsive resting for all devices.",
-      "timeframe": "3-6 months"
+      "timeframe": "3-6 months",
+      "project_repo": "https://github.com/Maria-Fox/FirstFive"
   }]
 }

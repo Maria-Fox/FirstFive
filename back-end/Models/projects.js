@@ -9,22 +9,25 @@ class Project {
 
   // Create a unique project. AUTH REQUIRED. Returns id, owner_username, name, project desc, timeframe.
 
-  static async createProject({owner_username, name, project_desc, timeframe}) {
-    console.log(owner_username)
+  static async createProject({owner_username, name, project_desc, timeframe, github_repo}) {
+    console.log("*****", github_repo)
+  if(owner_username, name, project_desc, timeframe && github_repo) console.log(true);
 
     let newProjectRes = await db.query(
-      `INSERT INTO projects(owner_username, name, project_desc, timeframe)
-      VALUES($1, $2, $3, $4)
+      `INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo)
+      VALUES($1, $2, $3, $4, $5)
       RETURNING 
             id, 
             owner_username, 
             name, 
             project_desc, 
-            timeframe`, 
-      [owner_username, name, project_desc, timeframe]
+            timeframe,
+            github_repo`, 
+      [owner_username, name, project_desc, timeframe, github_repo]
     );
 
     let newProject = newProjectRes.rows[0];
+    console.log(newProject, "***********")
 
     if(!newProject) throw new ExpressError("Project name already exists. lease update the name, or choose a new project to propose!");
 
@@ -42,7 +45,7 @@ class Project {
               name,
               project_desc, 
               timeframe, 
-              project_repo
+              github_repo
       FROM projects
       ORDER BY name`
     );
@@ -66,7 +69,8 @@ class Project {
               owner_username, 
               name,
               project_desc, 
-              timeframe
+              timeframe,
+              github_repo
       FROM projects 
       WHERE id = $1`,
       [project_id]
@@ -117,9 +121,8 @@ class Project {
   // Delete single project proposal. AUTH REQUIRED. If invalid throws error, otherwise nothing is returned.
 
   static async delete(project_id, username){
-    console.log("DELETING:", project_id)
 
-    // Route confirmation method is only accessed by username
+    // Route also confirms the method is only accessed by project_owner.
 
     let deletionResult = await db.query(
       `DELETE 

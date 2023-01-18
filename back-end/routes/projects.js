@@ -15,7 +15,7 @@ router.post("/new", ensureLoggedIn, async function (req, res, next){
 
     if(!validInputData.valid){
       let fieldErrors = validInputData.errors.map(e => e.stack);
-      return BadRequestError(fieldErrors);
+      throw new BadRequestError(fieldErrors);
     };
 
     let projectData = await Project.createProject(req.body);
@@ -69,7 +69,7 @@ router.patch("/:project_id", ensureLoggedIn, async function (req, res, next){
 
       let projectData = await Project.updateProject(req.params, reqData);
   
-      return res.status(204).json(projectData);
+      return res.status(200).json(projectData);
       
     } else {
       throw new UnauthorizedError();
