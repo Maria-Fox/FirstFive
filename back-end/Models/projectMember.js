@@ -11,7 +11,7 @@ class Project_Member {
 
     let newMemberResult = await db.query(
       `INSERT INTO project_members (project_id, username) 
-      VALUES project_id = $1, username =$2
+      VALUES ($1, $2)
       RETURNING id, project_id, username`,
       [project_id, username]
     );
@@ -34,7 +34,7 @@ class Project_Member {
     );
 
     let deletionConfirmation = deleteMemberResult.rows[0];
-    if(!deletionConfirmation) return new NotFoundError(`Porject or username do not exist. Unable to delte.`)
+    if(!deletionConfirmation) return new NotFoundError(`Project or username do not exist. Unable to delte.`)
   };
 
 

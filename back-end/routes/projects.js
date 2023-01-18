@@ -51,7 +51,8 @@ router.get("/:project_id", ensureLoggedIn, async function (req, res, next){
 
 
 // Allows project owner_username to update to project details.
-router.patch("/:project_id", ensureLoggedIn, async function (req, res, next){
+router.patch("/:project_id", ensureLoggedIn, 
+async function (req, res, next){
   try {
 
     let projectToUpdate = await Project.viewSingleProject(req.params);
@@ -65,9 +66,7 @@ router.patch("/:project_id", ensureLoggedIn, async function (req, res, next){
         return BadRequestError(fieldErrors);
       };
 
-      let reqData = req.body;
-
-      let projectData = await Project.updateProject(req.params, reqData);
+      let projectData = await Project.updateProject(req.params, req.body);
   
       return res.status(200).json(projectData);
       
@@ -81,7 +80,8 @@ router.patch("/:project_id", ensureLoggedIn, async function (req, res, next){
 
 
 // Allows project owner_username to update to project details.
-router.delete("/:project_id", ensureLoggedIn, async function (req, res, next){
+router.delete("/:project_id", ensureLoggedIn, 
+async function (req, res, next){
   try {
 
     let projectToDelete = await Project.viewSingleProject(req.params);

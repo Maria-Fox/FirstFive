@@ -4,6 +4,8 @@ const cors = require("cors");
 const authRoutes = require("./Routes/userAuth");
 const userRoutes = require("./Routes/user");
 const projectRoutes = require("./Routes/projects");
+const projectMemberRoutes = require("./Routes/projectMembers");
+const matchRoutes = require("./Routes/matches");
 const {ExpressError} = require("./ErrorHandling/expressError");
 const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
 
@@ -17,8 +19,8 @@ app.use(authenticateJWT);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
-
-
+app.use("/matches", matchRoutes);
+app.use("/member",projectMemberRoutes);
 
 app.get("/works", async function (req,res,err){
   return res.json({"worked": "like a charm"})

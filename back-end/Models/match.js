@@ -1,6 +1,7 @@
+const e = require("cors");
 const db = require("../db");
 const {ExpressError} = require("../ErrorHandling/expressError");
-
+const Project = require("./projects");
 
 class Matches {
 
@@ -11,11 +12,13 @@ class Matches {
   static async addMatch({project_id, username}){
 
     let newMatch = await db.query(
-      `INSERT INTO matches (project_id, username)
-            VALUES (project_id = $1, username = $2)
-            RETURNING id, project_id, username`, 
-      [project_id, username]
-    );
+        `INSERT INTO matches (project_id, username)
+        VALUES($1, $2)
+        RETURNING id, project_id, username`,
+        [project_id, username]
+      );
+
+    console.log(newMatch);
 
     return newMatch.rows[0];
   };
@@ -25,15 +28,15 @@ class Matches {
   // View current matches for username. AUTH REQUIRED. Updates match set to include the project_id.
 
   // JOIN users on matches.username = users.username - IF YOU NEED TO JOIN USERS
-
-
   static async viewAllUserMatches({username}){
 
     let userMatches = await db.query(
       `SELECT m.project_id,
               projects.project_desc,
               projects.name,
-              projects.owner_username
+              projects.owner_username,
+              projects.timeframe,
+              projects.github_repo
         FROM matches AS m
         JOIN projects on m.project_id = projects.id
         WHERE username = $1`, 
@@ -48,27 +51,41 @@ class Matches {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // View all users who matched with the prohect proposal. AUTH REQUIRED. Returns project_id, desc, name, owner_username, username (of  matchee), bio
+  // View all users who matched with the project_id. AUTH REQUIRED. Returns project_id, desc, name, owner_username, username (of  matchee), bio
 
-  static async viewProjectUserMatches({project_id}){
+  static async viewProjectUserMatches(project_id){
+
+    // Throws errors if project_id does not exist.
+    let existingProject = await Project.viewSingleProject(project_id);
+    console.log("confrim exists", existingProject);
 
     let projectUserMatches = await db.query(
-      `SELECT m.project_id,
-              projects.project_desc,
-              projects.name,
-              projects.owner_username,
-              users.username,
-              users.bio
+      `SELECT m.username AS user_matched,
+              users.bio AS matched_user_bio
         FROM matches AS m
         JOIN projects on m.project_id = projects.id
         JOIN users on m.username =  users.username
         WHERE project_id = $1`, 
-        [project_id]
+        [project_id.project_id]
     );
 
-    if(!projectUserMatches.rows) throw new ExpressError("Project has no matches at this time. Check back later!");
+    let allmatches = projectUserMatches.rows;
 
-    return projectUserMatches.rows;
+    if(!projectUserMatches.rows) throw new ExpressError("Project has no matches!");
+
+    let matches = {
+      "project_data": {
+        "proj_owner": existingProject.owner_username,
+        "proj_name" :existingProject.name,
+        "proj_desc": existingProject.project_desc,
+        "github_repo" : existingProject.github_repo,
+        "timeframe" :existingProject.timeframe
+      },
+      "user_matches": {...allmatches}
+    }
+
+    // return projectUserMatches.rows;
+    return matches;
   };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -80,13 +97,15 @@ class Matches {
     let unmatchResult = await db.query(
       `DELETE 
       FROM matches
-      WHERE username = $1 AND project_id = $2
+      WHERE project_id = $1 AND username = $2
       RETURNING project_id`,
-      [username, project_id]
+      [project_id, username]
     );
 
     let unmatchConfirmation = unmatchResult.rows[0];
 
-    if(!unmatchConfirmation) throw new ExpressError("Unable to complete deletion request.");
+    if(!unmatchConfirmation) throw new ExpressError("User is not matched with project.");
   };
-}
+};
+
+module.exports = Matches;

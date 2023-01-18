@@ -10,8 +10,6 @@ class Project {
   // Create a unique project. AUTH REQUIRED. Returns id, owner_username, name, project desc, timeframe.
 
   static async createProject({owner_username, name, project_desc, timeframe, github_repo}) {
-    console.log("*****", github_repo)
-  if(owner_username, name, project_desc, timeframe && github_repo) console.log(true);
 
     let newProjectRes = await db.query(
       `INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo)
@@ -78,7 +76,7 @@ class Project {
 
     let singleProjData = singleProjResult.rows[0];
 
-    if(!singleProjData) throw new NotFoundError("No such project exists.");
+    if(!singleProjData) throw new ExpressError("Project does note exist.");
     return singleProjData;
   };
 
