@@ -49,7 +49,7 @@ function ensureLoggedIn(req, res, next){
   };
 };
 
-// Used for editing profile details
+// Used for editing profile details or updating match preferences.
 function ensureAuthUser(req, res, next){
   try{
     if(res.locals.user.username == req.params.username){

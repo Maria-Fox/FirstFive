@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Match = require("../Models/match");
-const {ensureLoggedIn, ensureAuthUser } = require("../Middleware/auth");
+const {ensureLoggedIn, ensureAuthUser, ensureUserProjMatch } = require("../Middleware/auth");
 
 // All routes are prefixded with "/matches." AUTH REQUIRED FOR ALl.
 
@@ -29,10 +29,10 @@ async function (req,res, next){
   };
 });
 
-// should I limit to only those who have matched with project?
-// See ALL users who have matched with project.
+// See ALL users who have matched with project. **ONLY ACCESSIBLE TO USERS WHO MATCHED**
 router.get("/view/:project_id/users", 
-ensureLoggedIn, async function (req,res, next){
+ensureLoggedIn, ensureUserProjMatch,
+async function (req,res, next){
   try{
       let allUserMatches = await Match.viewProjectUserMatches(req.params);
       return res.status(200).json(allUserMatches);
