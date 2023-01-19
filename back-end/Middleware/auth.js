@@ -1,6 +1,8 @@
 const jsonWebToken = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config");
 const {UnauthorizedError} = require("../ErrorHandling/expressError");
+const Project = require("../Models/projects");
+const Match = require("../Models/match");
 
 
 // If a token is provided it verify against secret_key. If valid store on res.local.user. Otherwise, return an unauthorized error using next.
@@ -47,18 +49,57 @@ function ensureLoggedIn(req, res, next){
   };
 };
 
-
+// Used for editing profile details
 function ensureAuthUser(req, res, next){
-  if(res.locals.user.username == req.params.username){
-    return next();
-  } else {
-    throw new UnauthorizedError();
-  }
+  try{
+    if(res.locals.user.username == req.params.username){
+      return next();
+    } else {
+      throw new UnauthorizedError();
+    };
+  } catch(e){
+    return next(e);
+  };
+};
+
+async function ensureProjectOwner(req, res, next) {
+  try {
+    // project_id comes in as req param
+    let projectData = await Project.viewSingleProject(req.params);
+    // console.log("from request ***", projectData)
+
+    if(projectData.owner_username === res.locals.user.username){
+      return next();
+    } else {
+      throw new UnauthorizedError();
+    };
+  } catch(e){
+    return next(e);
+  };
+};
+
+// ensure user matched with project
+async function ensureUserProjMatch(req, res, next){
+  try{
+    // the user is always stored, project_id comes in as parameter.
+    let userMatches = await Match.confirmUserMatched(res.locals.user.username, req.params.project_id);
+
+    if(userMatches){
+      console.log("MATCHED**********")
+      return next();
+    } else {
+      throw new UnauthorizedError();
+    }
+  }catch(e){
+    next(e);
+  };
 };
 
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAuthUser
+  ensureAuthUser,
+  ensureProjectOwner,
+  ensureUserProjMatch
 };

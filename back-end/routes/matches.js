@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Match = require("../Models/match");
 const {ensureLoggedIn, ensureAuthUser } = require("../Middleware/auth");
 
-// All routes are prefixded with "/match." AUTH REQUIRED FOR ALl.
+// All routes are prefixded with "/matches." AUTH REQUIRED FOR ALl.
 
 // Create new match b/w user & project. Returns match id, username, and project_id.
 router.post("/add/:username/:project_id", 

@@ -1,42 +1,78 @@
 const db = require("../db");
-const { NotFoundError } = require("../ErrorHandling/ExpressError");
+const { NotFoundError, ExpressError } = require("../ErrorHandling/ExpressError");
+const Project = require("./projects");
 
 class Project_Member {
 
-  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Creates project_member. AUTH REQUIRED. Updates matches set to include project_id & username.
+    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  static async addMember ({project_id, username}){
+  // Creates project_member. Accessible to only the prject owner. Updates matches set to include project_id & username.
+
+  static async addMember (project_id, {username}){
 
     let newMemberResult = await db.query(
       `INSERT INTO project_members (project_id, username) 
       VALUES ($1, $2)
       RETURNING id, project_id, username`,
-      [project_id, username]
+      [project_id.project_id, username]
     );
 
-    return newProjMember = newMemberResult.rows[0];
+    let newProjMember = newMemberResult.rows[0];
+    return newProjMember;
+  };
+
+
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  // View all projec members. AUTH REQUIRED + must match project_id.
+
+  static async viewAllMembers(project_id){
+
+    // Throws error if project does not exist.
+    // let existingProject = await Project.viewSingleProject(project_id);
+
+    let allMembersRes = await db.query(
+      `SELECT users.username,
+              users.bio
+      FROM project_members
+      JOIN users ON project_members.username = users.username
+      WHERE project_id =$1`,
+      [project_id.project_id]
+    );
+
+    let validMembers = allMembersRes.rows;
+    if(!validMembers) throw new ExpressError("No members, yet!")
+    
+    let projetDataAndMembers = {
+      // "proj_data": {...existingProject},
+      "proj_members": {...validMembers}
+    };
+
+    return projetDataAndMembers;
   };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // Deletes project_member. AUTH REQUIRED. Updates likes set to include the liked_username.
 
-  static async deleteMember ({project_id, username}){
+  static async deleteMember ({project_id}, {username}){
 
     let deleteMemberResult = await db.query(
       `DELETE 
-      FROM prroject_members
+      FROM project_members
       WHERE project_id = $1 AND username =$2
       RETURNING id, project_id, username`,
       [project_id, username]
     );
 
     let deletionConfirmation = deleteMemberResult.rows[0];
-    if(!deletionConfirmation) return new NotFoundError(`Project or username do not exist. Unable to delte.`)
+    if(!deletionConfirmation) return new NotFoundError(`Project or username do not exist. Unable to delte.`);
+    return deletionConfirmation;
   };
 
 
+// class end bracket
+};
 
-}
+module.exports = Project_Member;

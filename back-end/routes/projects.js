@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Project = require("../Models/projects");
-const {ensureLoggedIn} = require("../Middleware/auth");
+const {ensureLoggedIn, ensureProjectOwner} = require("../Middleware/auth");
 const jsonschema = require("jsonschema");
 const updateProjectSchema = require("../Schemas/updateProject.json");
 const newProjectSchema = require("../Schemas/newProject.json");
@@ -51,14 +51,12 @@ router.get("/:project_id", ensureLoggedIn, async function (req, res, next){
 
 
 // Allows project owner_username to update to project details.
-router.patch("/:project_id", ensureLoggedIn, 
+router.patch("/:project_id", 
+ensureLoggedIn, 
+ensureProjectOwner,
 async function (req, res, next){
   try {
 
-    let projectToUpdate = await Project.viewSingleProject(req.params);
-
-    // Only the project_owner can update the project data.
-    if(projectToUpdate.owner_username === res.locals.user.username){
       let validFieldInputs = jsonschema.validate(req.body, updateProjectSchema);
 
       if(!validFieldInputs.valid){
@@ -69,10 +67,6 @@ async function (req, res, next){
       let projectData = await Project.updateProject(req.params, req.body);
   
       return res.status(200).json(projectData);
-      
-    } else {
-      throw new UnauthorizedError();
-    };
   } catch (e){
     return next(e);
   };
@@ -80,22 +74,14 @@ async function (req, res, next){
 
 
 // Allows project owner_username to update to project details.
-router.delete("/:project_id", ensureLoggedIn, 
+router.delete("/:project_id", 
+ensureLoggedIn, ensureProjectOwner,
 async function (req, res, next){
   try {
-
-    let projectToDelete = await Project.viewSingleProject(req.params);
-
-    // Only the project_owner can update the project data.
-    if(projectToDelete.owner_username === res.locals.user.username){
-      console.log("auth user");
       
       let deleteConfirmation = await Project.delete(req.params.project_id, res.locals.user.username);
   
-      return res.status(200).json(deleteConfirmation);
-    } else {
-      throw new UnauthorizedError();
-    };
+      return res.status(200).json({"Successful": "Deleted"});
   } catch (e){
     return next(e);
   };

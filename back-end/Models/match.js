@@ -1,6 +1,6 @@
 const e = require("cors");
 const db = require("../db");
-const {ExpressError} = require("../ErrorHandling/expressError");
+const {ExpressError, UnauthorizedError} = require("../ErrorHandling/expressError");
 const Project = require("./projects");
 
 class Matches {
@@ -17,8 +17,6 @@ class Matches {
         RETURNING id, project_id, username`,
         [project_id, username]
       );
-
-    console.log(newMatch);
 
     return newMatch.rows[0];
   };
@@ -106,6 +104,38 @@ class Matches {
 
     if(!unmatchConfirmation) throw new ExpressError("User is not matched with project.");
   };
+
+
+  // ************** USED FOR MIDDLEARE **************
+//  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+// Confirm user sending request has matched with the project_id.
+
+  static async confirmUserMatched(username, project_id){
+    console.log(`Confriming $${username} matched ${project_id}`);
+
+    let matchedUser = await db.query(
+      `SELECT username,
+              project_id
+      FROM matches
+      WHERE username = $1 AND project_id =$2`,
+      [username, project_id]
+    );
+
+    let confirmedMatch = matchedUser.rows[0];
+    console.log("!!!!!!!!!!", confirmedMatch);
+
+    if(!confirmedMatch){
+      throw new UnauthorizedError();
+    };
+
+    return confirmedMatch;
+  };
+
+
+// class closing bracket
 };
+
+
 
 module.exports = Matches;

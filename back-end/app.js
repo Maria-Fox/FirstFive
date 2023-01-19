@@ -9,18 +9,18 @@ const matchRoutes = require("./Routes/matches");
 const {ExpressError} = require("./ErrorHandling/expressError");
 const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
 
+// middleware for ALL routes.
 app.use(express.json());
 // enables preflight requests // use of middleware with cross-origin resource sharing
 app.use(cors());
 app.use(authenticateJWT);
-
 
 // app use this prefix for routes in this file.
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/matches", matchRoutes);
-app.use("/member",projectMemberRoutes);
+app.use("/projectmembers",projectMemberRoutes);
 
 app.get("/works", async function (req,res,err){
   return res.json({"worked": "like a charm"})
