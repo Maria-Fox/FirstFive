@@ -42,7 +42,7 @@ async function (req,res, next){
 });
 
 
-// Remove user from project matches.
+// Remove user/self from project matches.
 router.post("/remove/:username/:project_id", 
 ensureLoggedIn, ensureAuthUser,
 async function (req,res, next){

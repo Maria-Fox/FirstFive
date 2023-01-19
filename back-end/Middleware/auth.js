@@ -34,7 +34,6 @@ function authenticateJWT(req, res, next){
 };
 
 // ensure there is a user scoped to local res.locals.user
-
 function ensureLoggedIn(req, res, next){
 
   try{
@@ -86,6 +85,7 @@ async function ensureUserProjMatch(req, res, next){
 
     if(userMatches){
       console.log("MATCHED**********")
+      console.log(userMatches)
       return next();
     } else {
       throw new UnauthorizedError();

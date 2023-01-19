@@ -23,7 +23,7 @@ class Matches {
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // View current matches for username. AUTH REQUIRED. Updates match set to include the project_id.
+  // View project current matches for username. AUTH REQUIRED. 
 
   // JOIN users on matches.username = users.username - IF YOU NEED TO JOIN USERS
   static async viewAllUserMatches({username}){

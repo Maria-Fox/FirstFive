@@ -1,5 +1,5 @@
 const db = require("../db");
-const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling");
+const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
 
 class Message {
 
@@ -7,7 +7,7 @@ class Message {
 
   // Creates new message. AUTH REQUIRED. Returns id, message_from, message_to, body, sent_at.
 
-  static async createMessage({message_from, message_to, body}) {
+  static async createMessage(message_from, {message_to, body}) {
     // passing in the SQL native current_timestamp func for msg created at.
     const newMessage = await db.query(
         `INSERT INTO messages (
@@ -50,82 +50,72 @@ class Message {
 
   // View individual message by id. AUTH REQUIRED. Returns id, message_from, message_to, body, sent_at.
 
-  static async viewMessageID({id}){
+  static async viewMessageID({message_id, username}){
+    console.log(`Looking at msg w/ id ${message_id}`);
 
-    const messageSearchResult = await db.query(
-      `SELECT message_from,
-              message_to,
-              body,
-              sent_at,
-              read_at
-        FROM messages
-        WHERE id = $1`,
-        [id]
-    );
-      // `SELECT m.id,
-      //         m.message_from,
-      //         f.username AS message_from,
-      //         f.email AS from_email,
-      //         f.  AS from_ 
-      //         m.message_to,
-      //         t.username AS message_to,
-      //         t.email AS to_email,
-      //         t.  AS to_ ,
-      //         m.body,
-      //         m.sent_at,
-      //         m.read_at
-      //   FROM messages AS m
-      //     JOIN users AS f ON m.message_from = f.username
-      //     JOIN users AS t ON m.message_to = t.username
-      //   WHERE m.id = $1`,
-      // [id]);
+    const message = await db.query(
+      `SELECT messages.id,
+              messages.message_from AS message_from,
+              f.bio AS from_bio,
+              messages.message_to AS message_to,
+              t.bio AS to_bio,
+              messages.body,
+              messages.sent_at,
+              messages.read_at
+      FROM messages 
+      JOIN users AS f ON messages.message_from = f.username
+      JOIN users AS t ON messages.message_to = t.username
+      WHERE messages.id = $1`,
+      [message_id]);
 
-      // unsure if I even need to join. Look into this...
-      // SELECT (message_from, message_to, body, sent_at) FROM messages WHERE id = 1;
+      let msgData = message.rows[0];
+      // let message = messageSearchResult.rows[0];
+      if(!msgData) throw new NotFoundError("No message found.", 404);
 
-      let message = messageSearchResult.rows[0];
-      if(!message) throw new NotFoundError("Message does not exist.", 404)
+      // If the user is receing the message & opens it the read time is updated.
+      let updatedReadTime;
+      if(msgData.message_to === username){
+        updatedReadTime = await this.markMessageRead(message_id);
+      };
 
       // returning structured object w/ destructed message content
-      // return {
-      //   id: message.id,
-      //   from_user : {
-      //     username : message.message_from,
-      //     email: message.from_email,
-      //      : message.from_ 
-      //   },
-      //   to_user: {
-      //     username: message.message_to,
-      //     email: message.to_message_email,
-      //      : message.to_ 
-      //   },
-      //   body: message.body,
-      //   sent_at: message.sent_at,
-      //   read_at: message.read_at
-      // }
-      return message;
+      let formattedMsg  = {
+        "id": msgData.id,
+        "from_user" : {
+          "username" : msgData.message_from,
+          "from_bio": msgData.from_bio
+        },
+        "to_user": {
+          "username": msgData.message_to,
+          "to_bio": msgData.to_bio
+        },
+        "body": msgData.body,
+        "sent_at": msgData.sent_at,
+        "read_at": msgData.read_at || updatedReadTime
+      };
+
+      return formattedMsg;
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Mark message a read via id. AUTH REQUIRED.
+  // Mark message a read via id. AUTH REQUIRED. 
 
-  static async markMessageRead({id}){
+  static async markMessageRead(id){
 
     // using SQL timestamp function returns date time
     let messageReadResult = await db. query (
       `UPDATE messages
-      SET read_at = $1
-      WHERE id = $2
+      SET read_at = current_timestamp
+      WHERE id = $1
       RETURNING id, message_from, message_to, body, sent_at, read_at`,
-      [current_timestamp, id]
+      [id]
     );
 
     let updatedMessage = messageReadResult.rows[0];
 
     if(!updatedMessage) throw new NotFoundError("Message does not exist.", 404);
     return updatedMessage;
-
     };
 
     // closing class braket - do not delete

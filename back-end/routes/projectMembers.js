@@ -5,7 +5,7 @@ const {ensureLoggedIn, ensureAuthUser, ensureProjectOwner, ensureUserProjMatch} 
 
 // All routes are prefixed with "/projectmembers." AUTH REQUIRED FOR ALL.
 
-// Add in new Project_Member -only accessibe by project_owner
+// Add in new Project_Member. ** Accessible by project_owner only.
 router.post("/add/:project_id", 
 ensureLoggedIn,
 ensureProjectOwner, 
@@ -20,6 +20,7 @@ async function (req, res, next){
   };
 });
 
+
 // See all project members. **Accessible by all users who matched with project.**
 router.get("/view/all/:project_id", ensureLoggedIn, ensureUserProjMatch,
 async function (req, res, next){
@@ -27,7 +28,7 @@ async function (req, res, next){
 
     let allUsersWhoMatched = await Project_Member.viewAllMembers(req.params);
     return res.status(200).json(allUsersWhoMatched);
-    
+
   } catch(e){
     return next(e)
   };

@@ -6,6 +6,7 @@ const userRoutes = require("./Routes/user");
 const projectRoutes = require("./Routes/projects");
 const projectMemberRoutes = require("./Routes/projectMembers");
 const matchRoutes = require("./Routes/matches");
+const messageRoutes = require("./Routes/messages");
 const {ExpressError} = require("./ErrorHandling/expressError");
 const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
 
@@ -21,6 +22,7 @@ app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/matches", matchRoutes);
 app.use("/projectmembers",projectMemberRoutes);
+app.use("/messages", messageRoutes);
 
 app.get("/works", async function (req,res,err){
   return res.json({"worked": "like a charm"})
