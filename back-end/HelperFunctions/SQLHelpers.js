@@ -19,7 +19,7 @@ function sqlForPartialUpdate(dataToUpdate) {
       `"${colName}"=$${idx + 1}`,
   );
 
-  // returns a single obj with two keys {setCols, dataToUpdate}. Set Cols: every column needing an update (and varaible index). Values, corresponding values to column edit.
+  // returns a single obj with two keys {dbColumnsToUpdate, values}. dbColumnsToUpdate: every column needing an update (and varaible index). Values, corresponding values to column edit.
 //  @example {username: "SoftwareDevUser1",  : "9165286431"} =>
 //  *   { dbColumnsToUpdate: "username"=$1 , "email" = $2},
 //  *     values: ["SoftwareDevUser1", "newEmail@updated.com"] }
