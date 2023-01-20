@@ -10,6 +10,8 @@ const messageRoutes = require("./Routes/messages");
 const {ExpressError} = require("./ErrorHandling/expressError");
 const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
 
+// process.env.NODE_ENV = "test";
+
 // middleware for ALL routes.
 app.use(express.json());
 // enables preflight requests // use of middleware with cross-origin resource sharing
@@ -25,7 +27,7 @@ app.use("/projectmembers",projectMemberRoutes);
 app.use("/messages", messageRoutes);
 
 app.get("/works", async function (req,res,err){
-  return res.json({"worked": "like a charm"})
+  return res.status(200).json({"worked": "like a charm"})
 });
 
 // Generic error handler for cases not explicitly caught."

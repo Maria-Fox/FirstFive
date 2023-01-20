@@ -26,7 +26,7 @@ async function (req, res, next){
     return res.status(200).json(allMessages);
   } catch(e){
     return next(e);
-  }
+  };
 });
 
 // Grab message information along with message sender & receive bio's. If the message was sent to the user the read time is also updated.
@@ -40,10 +40,6 @@ async function (req, res,next){
     return next(e);
   };
 });
-
-
-
-
 
 
 module.exports = router;
