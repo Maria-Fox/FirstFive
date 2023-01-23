@@ -18,7 +18,9 @@ router.post("/new", ensureLoggedIn, async function (req, res, next){
       throw new BadRequestError(fieldErrors);
     };
 
-    let projectData = await Project.createProject(req.body);
+    let username = res.locals.user.username;
+
+    let projectData = await Project.createProject({owner_username: username, ... req.body});
 
     return res.status(200).json(projectData);
 
@@ -56,7 +58,6 @@ ensureLoggedIn,
 ensureProjectOwner,
 async function (req, res, next){
   try {
-
       let validFieldInputs = jsonschema.validate(req.body, updateProjectSchema);
 
       if(!validFieldInputs.valid){

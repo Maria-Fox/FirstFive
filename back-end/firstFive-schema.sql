@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  username VARCHAR(25) PRIMARY KEY,
+  username VARCHAR(20) PRIMARY KEY,
   password TEXT NOT NULL,
   email TEXT NOT NULL,
   bio TEXT 
@@ -23,7 +23,7 @@ CREATE TABLE messages (
 CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
   owner_username TEXT NOT NULL REFERENCES users on DELETE CASCADE,
-  name TEXT UNIQUE NOT NULL,
+  name VARCHAR(20) UNIQUE NOT NULL,
   project_desc TEXT NOT NULL,
   timeframe TEXT NOT NULL,
   github_repo TEXT 

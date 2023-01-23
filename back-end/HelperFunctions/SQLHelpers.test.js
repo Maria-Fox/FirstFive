@@ -13,7 +13,7 @@ let updatedProjData = {
 };
 
 describe("Confirm correct column & value returns", function () {
-  
+
   test("UserData is updated correctly.", function (){
   
     let result = sqlForPartialUpdate(updatedUserData);

@@ -11,6 +11,15 @@ class Matches {
 
   static async addMatch({project_id, username}){
 
+    let existingMatch = await db.query(
+      `SELECT username
+      FROM matches 
+      WHERE username = $1 AND project_id = $2`,
+      [username, project_id]
+    );
+
+    if (existingMatch.rows[0]) throw new ExpressError("Already matched to project!");
+
     let newMatch = await db.query(
         `INSERT INTO matches (project_id, username)
         VALUES($1, $2)
@@ -55,7 +64,7 @@ class Matches {
 
     // Throws errors if project_id does not exist.
     let existingProject = await Project.viewSingleProject(project_id);
-    console.log("confrim exists", existingProject);
+    console.log("project exists", existingProject);
 
     let projectUserMatches = await db.query(
       `SELECT m.username AS user_matched,

@@ -11,6 +11,15 @@ class Project_Member {
 
   static async addMember (project_id, {username}){
 
+    let existingMember = await db.query(
+      `SELECT username
+      FROM project_members
+      WHERE username = $1 AND project_id = $2`,
+      [username, project_id.project_id]
+    );
+
+    if(existingMember.rows[0]) throw new ExpressError("User already including in project members!");
+
     let newMemberResult = await db.query(
       `INSERT INTO project_members (project_id, username) 
       VALUES ($1, $2)

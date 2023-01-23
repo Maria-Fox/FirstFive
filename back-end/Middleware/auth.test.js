@@ -9,82 +9,79 @@ ensureLoggedIn,
 ensureAuthUser,
 ensureProjectOwner,
 ensureUserProjMatch} = require("./auth");
+const db = require("../db");
 
 let payload = {"username": "test_user"};
 
 let signedUserToken = jwt.sign(payload, SECRET_KEY);
 console.log("Signed token **", signedUserToken);
 
-// describe("JWT validity assigns res.locals approporiately.", function (){
+describe("JWT validity assigns res.locals approporiately.", function (){
 
-//   test("Valid JWT assigns res.locals property", function () {
-//     // Mocking req, res cycle and properties. Passing in token, based off validity the next route will occur.
-//       const req = {"headers" : {authorization : `Bearer ${signedUserToken}`}};
-//       const res = {locals: {}};
+  test("Valid JWT assigns res.locals property", function () {
+    // Mocking req, res cycle and properties. Passing in token, based off validity the next route will occur.
+      const req = {"headers" : {authorization : `Bearer ${signedUserToken}`}};
+      const res = {locals: {}};
 
-//       const next = function(e){
-//         expect(e).toBeFalsy();
-//       };
+      const next = function(e){
+        expect(e).toBeFalsy();
+      };
 
-//       authenticateJWT(req, res,next);
+      authenticateJWT(req, res,next);
 
-//       expect(res.locals).toEqual({
-//         user: {
-//           iat: expect.any(Number),
-//           username: "test_user"
-//         }
-//       });
-//   });
-
-
-//   test("Invalid JWT returns error.", function () {
-
-//     // Mocking req, res cycle and properties. Passing in INVALID token.
-//       const req = {"headers" : {authorization : `Bearer "fakeToken"`}};
-//       const res = {locals: {}};
-
-//       const next = function(e){
-//         expect(e).toBeFalsy();
-//       };
-
-//       authenticateJWT(req, res, next);
-
-//       expect(res.locals).toEqual({});
-//   });
-// });
-
-// describe("Confirm user sign in via res.locals property", function () {
-//   test("Valid user signed in", function () {
-
-//     let req = {"headers": {authorization: `Bearer ${signedUserToken}`}};
-//     let res = {locals : {user: {"username" : "test_user"}}};
-
-//       const next = function(e){
-//         expect(e).toBeFalsy();
-//       };
-
-//       ensureLoggedIn(req, res, next);
-//       expect(res.locals.user.username).toEqual("test_user");
-//   });
-
-//   test("No auth token- no user assigned to res.locals", function () {
-//     const req = { headers : {}};
-//     const res = { locals: {} };
-//     const next = function (e) {
-//       expect(e instanceof UnauthorizedError).toBeTruthy();
-//     };
-//     ensureLoggedIn(req, res, next);
-//   });
-// });
+      expect(res.locals).toEqual({
+        user: {
+          iat: expect.any(Number),
+          username: "test_user"
+        }
+      });
+  });
 
 
+  test("Invalid JWT returns error.", function () {
 
-// The rest include API calls.
+    // Mocking req, res cycle and properties. Passing in INVALID token.
+      const req = {"headers" : {authorization : `Bearer "fakeToken"`}};
+      const res = {locals: {}};
+
+      const next = function(e){
+        expect(e).toBeFalsy();
+      };
+
+      authenticateJWT(req, res, next);
+
+      expect(res.locals).toEqual({});
+  });
+});
+
+describe("Confirm user sign in via res.locals property", function () {
+  test("Valid user signed in", function () {
+
+    let req = {"headers": {authorization: `Bearer ${signedUserToken}`}};
+    let res = {locals : {user: {"username" : "test_user"}}};
+
+      const next = function(e){
+        expect(e).toBeFalsy();
+      };
+
+      ensureLoggedIn(req, res, next);
+      expect(res.locals.user.username).toEqual("test_user");
+  });
+
+  test("No auth token- no user assigned to res.locals", function () {
+    const req = { headers : {}};
+    const res = { locals: {} };
+    const next = function (e) {
+      expect(e instanceof UnauthorizedError).toBeTruthy();
+    };
+    ensureLoggedIn(req, res, next);
+  });
+});
 
 
-describe("Ensure authorized user is accessing route",  function () {
+
+describe("Route response based on user signin/ validity",  function () {
     // res.locals.user.username == req.params.username
-
 
   test("Valid user accessing route", function () {
     let req = 
@@ -98,7 +95,7 @@ describe("Ensure authorized user is accessing route",  function () {
     ensureAuthUser(req, res, next);
   });
 
-  test("Invalid user accessing route", function () {
+  test("Invalid user receives error.", function () {
     let req = { params: {username : "randomUserAcct"}};
       
     let res = {locals: {user : {username: "test_user"}}};
@@ -112,7 +109,13 @@ describe("Ensure authorized user is accessing route",  function () {
 
 });
 
-// These two require API calls- double check w/ Kwame if this is the best route to complete. If so, do the tests.
-
 // ensureProjectOwner,
+
+describe("Confirm project_owner status to determine route result", function (){
+  test("Valid projectt_owner sending request", function (){
+    // here
+    
+
+  });
+});
 // ensureUserProjMatch
