@@ -112,7 +112,7 @@ describe("Ensure authorized user is accessing route",  function () {
 
 });
 
-
+// These two require API calls- double check w/ Kwame if this is the best route to complete. If so, do the tests.
 
 // ensureProjectOwner,
 // ensureUserProjMatch

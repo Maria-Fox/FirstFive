@@ -9,7 +9,7 @@ const {ensureAuthUser} = require("../Middleware/auth");
 router.post("/:username/create", ensureAuthUser,
 async function (req, res, next){
   try {
-    // message from is always the signed in user
+    // message from is always the signed in user, req body has msg.to and body
     let newMessage = await Message.createMessage(req.params.username, req.body);
     return res.status(201).json(newMessage);
   } catch(e){
@@ -29,7 +29,7 @@ async function (req, res, next){
   };
 });
 
-// Grab message information along with message sender & receive bio's. If the message was sent to the user the read time is also updated.
+// Access given message information along with message sender & receiver bio's. If the message was sent to the user the read time is also updated.
 router.get("/:username/read/:message_id", ensureAuthUser,
 async function (req, res,next){
   try{
