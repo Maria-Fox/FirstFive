@@ -18,12 +18,12 @@ async function commonnBeforeAll(){
     `INSERT INTO users (username, password, email, bio)
     VALUES ('test1', $1, 'test1@email.com', 'Bio-1'),
           ('test2', $2, 'test2gmail.com', 'Bio-2'),
-          ('test3', $3, 'test2@aol.com', 'Bio-3'),
-          ('test4', $4, test4@yahoo.com, 'Bio-4')`, 
+          ('test3', $3, 'test3@aol.com', 'Bio-3'),
+          ('test4', $4, 'test4@aol.com', 'Bio-4')`, 
     [await hashPassword("firstPw"), 
     await hashPassword("secPW"), 
-    await hashPassword("thirdPW"), 
-    await hashPassword("fourthpw")]
+    await hashPassword("thirdPW"),
+    await hashPassword("fourthPW")]
   );
 
   await db.query(
@@ -33,7 +33,7 @@ async function commonnBeforeAll(){
             ('test1', 'Proj1', 'The first test proj', '1 day', 'https:github.com/1'),
             ('test2', 'Proj2', 'The second proj', '2 days','https:github.com/2'),
             ('test3', 'Proj3', 'The third proj', '3 days','https:github.com/3'),
-            ('test4', 'Proj4', 'The fourth proj', '4 days','https:github.com/4')` 
+            ('test4', 'Proj4', 'The fourth proj', '4 days', 'https:github.com/4')` 
   );
 };
 

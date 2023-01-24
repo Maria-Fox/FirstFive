@@ -91,7 +91,6 @@ class User {
   // Find user based on username. AUTH REQUIRED. Returns user details or no user found Error.
 
   static async findUser({username}){
-    console.log(username)
 
     let foundUser = await db.query(
       `SELECT username,
