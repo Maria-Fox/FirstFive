@@ -76,7 +76,7 @@ class Project_Member {
     );
 
     let deletionConfirmation = deleteMemberResult.rows[0];
-    if(!deletionConfirmation) return new NotFoundError(`Project or username do not exist. Unable to delte.`);
+    if(!deletionConfirmation) return new NotFoundError(`Project or username do not exist. Unable to delete.`);
     return deletionConfirmation;
   };
 

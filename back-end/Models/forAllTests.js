@@ -4,6 +4,7 @@ const {BCRYPT_WORK_FACTOR} = require("../config");
 const { map } = require("../app");
 
 const projectIds = [];
+const projectMemberIds = [];
 
 // Delete all items in each table.
 async function commonnBeforeAll(){
@@ -41,9 +42,23 @@ async function commonnBeforeAll(){
 
 
     // We return the newly added proect ID's then add to array to test w/ later.
-    // starting at 0 index, removing 0, adding in all result id's
+    // starting at 0 index, removing 0, adding in all row id's
     projectIds.splice(0, 0, ...newProjects.rows.map(r => r.id));
     console.log("****The project ids are: ", projectIds);
+
+    const project_members_added = await db.query(
+      `INSERT INTO project_members (project_id, username)
+      VALUES ($1, 'test4'),
+            ($2, 'test3'),
+            ($3, 'test3'),
+            ($4, 'test4')
+      RETURNING id`,
+    [projectIds[0], projectIds[0], projectIds[1], projectIds[1]]);
+
+    // effectively connects project_id 1 => users 4 and 3
+    // project_2 => users 3 and 4
+    projectMemberIds.splice(0, 0, ... project_members_added.rows.map(r => r.id));
+    console.log("***Project member id's", projectMemberIds);
 };
 
 
@@ -68,5 +83,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   afterAllEnd,
-  projectIds
+  projectIds,
+  projectMemberIds
 };
