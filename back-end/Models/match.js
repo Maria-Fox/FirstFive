@@ -1,7 +1,7 @@
 const e = require("cors");
 const db = require("../db");
 const {ExpressError, UnauthorizedError} = require("../ErrorHandling/expressError");
-const Project = require("./projects");
+const Project = require("./project");
 
 class Matches {
 

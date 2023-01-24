@@ -1,7 +1,7 @@
 const jsonWebToken = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config");
 const {UnauthorizedError} = require("../ErrorHandling/expressError");
-const Project = require("../Models/projects");
+const Project = require("../Models/project");
 const Match = require("../Models/match");
 
 

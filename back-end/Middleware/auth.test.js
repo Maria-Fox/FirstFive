@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config");
 const {UnauthorizedError, ExpressError} = require("../ErrorHandling/expressError");
-const Project = require("../Models/projects");
+const Project = require("../Models/project");
 const Match = require("../Models/match");
 const   
 {authenticateJWT,
@@ -114,7 +114,7 @@ describe("Route response based on user signin/ validity",  function () {
 describe("Confirm project_owner status to determine route result", function (){
   test("Valid projectt_owner sending request", function (){
     // here
-    
+
 
   });
 });

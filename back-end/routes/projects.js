@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Project = require("../Models/projects");
+const Project = require("../Models/project");
 const {ensureLoggedIn, ensureProjectOwner} = require("../Middleware/auth");
 const jsonschema = require("jsonschema");
 const updateProjectSchema = require("../Schemas/updateProject.json");
@@ -19,7 +19,6 @@ router.post("/new", ensureLoggedIn, async function (req, res, next){
     };
 
     let username = res.locals.user.username;
-
     let projectData = await Project.createProject({owner_username: username, ... req.body});
 
     return res.status(200).json(projectData);

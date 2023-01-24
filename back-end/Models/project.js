@@ -11,6 +11,15 @@ class Project {
 
   static async createProject({owner_username, name, project_desc, timeframe, github_repo}) {
 
+    let existingProjName = await db.query(
+      `SELECT * 
+      FROM projects 
+      WHERE name= $1`,
+      [name]
+    );
+
+    if(existingProjName.rows[0]) throw new ExpressError("Project name must be unique. Please choose a new name or project.");
+
     let newProjectRes = await db.query(
       `INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo)
       VALUES($1, $2, $3, $4, $5)
@@ -26,8 +35,6 @@ class Project {
 
     let newProject = newProjectRes.rows[0];
     console.log(newProject, "***********")
-
-    if(!newProject) throw new ExpressError("Project name already exists. lease update the name, or choose a new project to propose!");
 
     return newProject;
   };
@@ -76,7 +83,7 @@ class Project {
 
     let singleProjData = singleProjResult.rows[0];
 
-    if(!singleProjData) throw new ExpressError("Project does note exist.");
+    if(!singleProjData) throw new NotFoundError("Project does not exist.");
     return singleProjData;
   };
 

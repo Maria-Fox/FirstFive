@@ -5,20 +5,11 @@
     "default": {},
     "title": "New Project Root Schema",
     "required": [
-        "owner_username",
         "name",
         "project_desc",
         "timeframe"
     ],
     "properties": {
-        "owner_username": {
-            "type": "string",
-            "default": "",
-            "title": "The owner_username Schema",
-            "examples": [
-                "Delia_Designs"
-            ]
-        },
         "name": {
             "type": "string",
             "default": "",
@@ -53,7 +44,6 @@
         }
     },
     "examples": [{
-        "owner_username": "Delia_Designs",
         "name": "Design a smart TV APP layout ",
         "project_desc": "Beautifully design an interface for smart TV platforms. Include comprehnsive resting for all devices.",
         "timeframe": "3-6 months",

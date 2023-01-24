@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
 const {BCRYPT_WORK_FACTOR} = require("../config");
+const { map } = require("../app");
+
+const projectIds = [];
 
 // Delete all items in each table.
 async function commonnBeforeAll(){
@@ -26,16 +29,23 @@ async function commonnBeforeAll(){
     await hashPassword("fourthPW")]
   );
 
-  await db.query(
+  const newProjects = await db.query(
     `INSERT INTO projects 
             (owner_username, name, project_desc, timeframe, github_repo)
     VALUES 
             ('test1', 'Proj1', 'The first test proj', '1 day', 'https:github.com/1'),
             ('test2', 'Proj2', 'The second proj', '2 days','https:github.com/2'),
             ('test3', 'Proj3', 'The third proj', '3 days','https:github.com/3'),
-            ('test4', 'Proj4', 'The fourth proj', '4 days', 'https:github.com/4')` 
-  );
+            ('test4', 'Proj4', 'The fourth proj', '4 days', 'https:github.com/4')
+    RETURNING id`);
+
+
+    // We return the newly added proect ID's then add to array to test w/ later.
+    // starting at 0 index, removing 0, adding in all result id's
+    projectIds.splice(0, 0, ...newProjects.rows.map(r => r.id));
+    console.log("****The project ids are: ", projectIds);
 };
+
 
 // Initiates/starts transaction
 async function commonBeforeEach() {
@@ -57,5 +67,6 @@ module.exports = {
   commonnBeforeAll,
   commonBeforeEach,
   commonAfterEach,
-  afterAllEnd
+  afterAllEnd,
+  projectIds
 };

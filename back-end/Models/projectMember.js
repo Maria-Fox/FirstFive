@@ -1,6 +1,6 @@
 const db = require("../db");
 const { NotFoundError, ExpressError } = require("../ErrorHandling/ExpressError");
-const Project = require("./projects");
+const Project = require("./project");
 
 class Project_Member {
 
