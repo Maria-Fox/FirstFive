@@ -144,6 +144,20 @@ class Project {
     return deletionConfirmation
   };
 
+  // Have not completed testing. Would like additional filters like owner_username, or github_repo
+  static async projectSearch({project_name}){
+    let projectData = await db.query(
+      `SELECT owner_username, name, project_desc, timeframe, github_repo
+      FROM projects
+      WHERE name =$1`,
+      [project_name]
+    );
+
+    if(!projectData.rows[0]) throw new NotFoundError();
+    return projectData.rows[0];
+  };
+
+
   // class end bracket
 };
 

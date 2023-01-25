@@ -41,7 +41,7 @@ class Message {
     );
 
     let userMessages = allUserMessagesResult.rows;
-    if(!userMessages) throw new ExpressError("No messages, yer!");
+    if(!userMessages) throw new ExpressError("No messages, yet!");
 
     return userMessages;
   };
