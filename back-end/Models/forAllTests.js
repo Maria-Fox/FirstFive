@@ -6,6 +6,7 @@ const { map } = require("../app");
 const projectIds = [];
 const matchIds = [];
 const projectMemberIds = [];
+const messageIds = [];
 
 // Delete all items in each table.
 async function commonnBeforeAll(){
@@ -57,7 +58,7 @@ async function commonnBeforeAll(){
       [projectIds[0], projectIds[1], projectIds[0], projectIds[1]]);
 
   matchIds.splice(0, 0, ...matches.rows.map(r => r.id));
-  console.log("***Matches id's are: ", matchIds);
+  // console.log("***Matches id's are: ", matchIds);
 
 
   const project_members_added = await db.query(
@@ -72,8 +73,18 @@ async function commonnBeforeAll(){
     // effectively connects project_id 1 => users 4 and 3
     // project_2 => users 3 and 4
     projectMemberIds.splice(0, 0, ...project_members_added.rows.map(r => r.id));
-    console.log("***Project member id's are: ", projectMemberIds);
-};
+    // console.log("***Project member id's are: ", projectMemberIds);
+
+  const messages = await db.query(
+      `INSERT INTO messages (message_from, message_to, body, sent_at)
+      ValUES 
+          ($1, $2, 'This is from user 3 to user 4', current_timestamp),
+          ($3, $4, 'This is from user 4 to user 3', current_timestamp)
+          RETURNING id`,
+          ['test3', 'test4', 'test4', 'test3']);
+
+      messageIds.splice(0, 0, ...messages.rows.map(r => r.id));
+  };
 
 
 // Initiates/starts transaction
@@ -99,5 +110,6 @@ module.exports = {
   afterAllEnd,
   projectIds,
   projectMemberIds,
-  matchIds
+  matchIds,
+  messageIds
 };

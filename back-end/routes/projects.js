@@ -61,7 +61,7 @@ async function (req, res, next){
 
       if(!validFieldInputs.valid){
         let fieldErrors = validFieldInputs.errors.map(e => e.stack);
-        return BadRequestError(fieldErrors);
+        throw new BadRequestError(fieldErrors);
       };
 
       let projectData = await Project.updateProject(req.params, req.body);

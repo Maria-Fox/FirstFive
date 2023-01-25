@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const Message = require("../Models/message");
 const {ensureAuthUser} = require("../Middleware/auth");
+const jsonschema = require("jsonschema");
+const newMsgSchema = require("../Schemas/newMessage.json");
+const {BadRequestError} = require("../ErrorHandling/expressError");
 
 // All routes prefixed with "/messages." All require auth and project match.
 
@@ -9,6 +12,12 @@ const {ensureAuthUser} = require("../Middleware/auth");
 router.post("/:username/create", ensureAuthUser,
 async function (req, res, next){
   try {
+    let validFieldInput = jsonschema.validate(req.body, newMsgSchema);
+
+    if(!validFieldInput.valid){
+      let fieldErrors = validFieldInput.errors.map(e => e.stack);
+      throw new BadRequestError(fieldErrors);
+    };
     // message from is always the signed in user, req body has msg.to and body
     let newMessage = await Message.createMessage(req.params.username, req.body);
     return res.status(201).json(newMessage);

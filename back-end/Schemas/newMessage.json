@@ -5,19 +5,10 @@
   "default": {},
   "title": "New Msg Schema",
   "required": [
-      "message_from",
       "message_to",
       "body"
   ],
   "properties": {
-      "message_from": {
-          "type": "string",
-          "default": "",
-          "title": "The message_from Schema",
-          "examples": [
-              "softwareDev1"
-          ]
-      },
       "message_to": {
           "type": "string",
           "default": "",
