@@ -14,6 +14,7 @@ afterAll(afterAllEnd); //close connection to db
 // Otherwise, method is not accessible.
 
 // Add project member***************************************** 
+// Middleware exists to ensure only project_owners can access method.
 
 describe("Add project member", function (){
   test("Add project member - project_owner", async function (){
@@ -35,7 +36,6 @@ describe("Add project member", function (){
   });
 
   test("Deny duplicate member", async function (){
-
     try{
       let newProjMember = await Project_Member.addMember({"project_id": projectIds[0]}, {username: "test2"});
 
@@ -49,6 +49,7 @@ describe("Add project member", function (){
 
 // View all members. Middleware exists t***************************************** 
 // middleware exists to check for invalid id returning an error.
+
 describe("View all project members", function (){
   test("Valid project id returns all project members", async function () {
     let allProjUsers = await Project_Member.viewAllMembers({"project_id": projectIds[0]});
@@ -70,8 +71,8 @@ describe("View all project members", function (){
   })
 });
 
-// middleware exists to redirect non project owners. They cannot access method.
 // Delete project member.***************************************** 
+// middleware exists to redirect non project owners. They cannot access method.
 
 describe("Allow project_owner to delete given project", function(){
   test("Valid user deleting project", async function (){

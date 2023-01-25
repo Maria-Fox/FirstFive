@@ -4,6 +4,7 @@ const {BCRYPT_WORK_FACTOR} = require("../config");
 const { map } = require("../app");
 
 const projectIds = [];
+const matchIds = [];
 const projectMemberIds = [];
 
 // Delete all items in each table.
@@ -46,7 +47,20 @@ async function commonnBeforeAll(){
     projectIds.splice(0, 0, ...newProjects.rows.map(r => r.id));
     console.log("****The project ids are: ", projectIds);
 
-    const project_members_added = await db.query(
+  const matches = await db.query(
+      `INSERT INTO matches (project_id, username)
+      VALUES ($1, 'test3'),
+            ($2, 'test3'),
+            ($3, 'test4'),
+            ($4, 'test4')
+      RETURNING id`,
+      [projectIds[0], projectIds[1], projectIds[0], projectIds[1]]);
+
+  matchIds.splice(0, 0, ...matches.rows.map(r => r.id));
+  console.log("***Matches id's are: ", matchIds);
+
+
+  const project_members_added = await db.query(
       `INSERT INTO project_members (project_id, username)
       VALUES ($1, 'test4'),
             ($2, 'test3'),
@@ -57,8 +71,8 @@ async function commonnBeforeAll(){
 
     // effectively connects project_id 1 => users 4 and 3
     // project_2 => users 3 and 4
-    projectMemberIds.splice(0, 0, ... project_members_added.rows.map(r => r.id));
-    console.log("***Project member id's", projectMemberIds);
+    projectMemberIds.splice(0, 0, ...project_members_added.rows.map(r => r.id));
+    console.log("***Project member id's are: ", projectMemberIds);
 };
 
 
@@ -84,5 +98,6 @@ module.exports = {
   commonAfterEach,
   afterAllEnd,
   projectIds,
-  projectMemberIds
+  projectMemberIds,
+  matchIds
 };

@@ -112,6 +112,7 @@ class Matches {
     let unmatchConfirmation = unmatchResult.rows[0];
 
     if(!unmatchConfirmation) throw new ExpressError("User is not matched with project.");
+    return unmatchConfirmation;
   };
 
 
