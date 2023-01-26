@@ -8,6 +8,7 @@ class Message {
   // Creates new message. AUTH REQUIRED. Returns id, message_from, message_to, body, sent_at.
 
   static async createMessage(message_from, {message_to, body}) {
+    console.log("***** messsage_from, {message_to, body}", message_from, message_to, body)
     // passing in the SQL native current_timestamp func for msg created at.
     const newMessage = await db.query(
         `INSERT INTO messages (
@@ -36,7 +37,8 @@ class Message {
               sent_at,
               read_at
       FROM messages
-      WHERE message_from = $1 OR message_to = $2`,
+      WHERE message_from = $1 OR message_to = $2
+      ORDER BY sent_at`,
       [username, username]
     );
 
