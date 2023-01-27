@@ -2,7 +2,7 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const {BCRYPT_WORK_FACTOR} = require("../config");
 const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
-const {ExpressError, NotFoundError, BadRequestError} = require("../ErrorHandling/expressError");
+const {ExpressError, NotFoundError, BadRequestError, UnauthorizedError} = require("../ErrorHandling/expressError");
 
 class User {
   // Primary key of username. Uses parameterized queries to prevent SQL injection.
@@ -67,7 +67,7 @@ class User {
       return user;
       };
     };
-    throw new BadRequestError("Incorrect username or password.");
+    throw new UnauthorizedError();
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -101,15 +101,8 @@ class User {
     );
 
     let validUser = foundUser.rows[0]
-
-    if(validUser){
-
-      // MAYBE SEE IF YOU WANT TO DISPLAY LIKES?
-      return validUser;
-
-    } else {
-      throw new NotFoundError(`${username} does not exist. Please update your search.`);
-    }
+    if(!validUser) throw new NotFoundError();
+    return validUser;
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -158,10 +151,11 @@ class User {
 
   static async deleteUser({username}){
 
+
       let deleteRequest = await db.query(
         `DELETE 
         FROM users
-        WHERE username = $1 
+        WHERE username = $1
         RETURNING username`, 
         [username]
       );

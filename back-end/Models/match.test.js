@@ -1,5 +1,5 @@
 const db = require("../db");
-const {ExpressError, UnauthorizedError, NotFoundError} = require("../ErrorHandling/expressError");
+const {ExpressError, UnauthorizedError, NotFoundError, BadRequestError} = require("../ErrorHandling/expressError");
 const Match = require("./match");
 const {commonnBeforeAll,
   commonBeforeEach,
@@ -37,7 +37,7 @@ describe("Add match", function (){
     try{
       let dupMatch = await Match.addMatch({project_id: projectIds[1], username: 'test3'});
     } catch(e){
-      expect(e instanceof ExpressError).toBeTruthy();
+      expect(e instanceof BadRequestError).toBeTruthy();
     };
   });
 });
@@ -73,7 +73,7 @@ describe("View all user matches", function (){
     try{
       let emptyMatches = await Match.viewAllUserMatches({username: "test1"});
     } catch(e){
-      expect(e instanceof ExpressError).toBeTruthy();
+      expect(e instanceof BadRequestError).toBeTruthy();
     };
   });
 });
@@ -84,7 +84,6 @@ describe("View project user matches", function (){
 
   test("View users who have matched project_id", async function (){
     let usersWhoMatched = await Match.viewProjectUserMatches({project_id: projectIds[0]});
-    // console.log(usersWhoMatched);
 
     expect(usersWhoMatched).toEqual(
       {

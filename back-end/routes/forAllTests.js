@@ -66,31 +66,26 @@ async function commonnBeforeAll(){
     };
 
   //***************************************** 
-  // Tokens to validate auth required routes.
-  // const user3Token = createJWT({user: {username: 'test3'}});
-  // const user4Token = createJWT({user: {username: 'test4'}});
-
-  // console.log("***********", user3Token, user4Token);
-
-  //***************************************** 
   // Create projects & insert projectid's in array.
   projectIds[0] = (await Project.createProject(project3)).id;
   projectIds[1] = (await Project.createProject(project4)).id;
 
-  let matchUser3ToProj4 = {
-    project_id: projectIds[0],
-    username: "test3"
-  };
+  // don't need to match anymore.
 
-  let matchUser4ToProj3 = {
-    project_id: projectIds[1],
-    username: "test4"
-  };
+  // let matchUser3ToProj4 = {
+  //   project_id: projectIds[0],
+  //   username: "test3"
+  // };
+
+  // let matchUser4ToProj3 = {
+  //   project_id: projectIds[1],
+  //   username: "test4"
+  // };
 
   //***************************************** 
   // Match users to projects. Insert match id into match array.
-  matchIds[0] = await Match.addMatch(matchUser3ToProj4);
-  matchIds[1] = await Match.addMatch(matchUser4ToProj3);
+  // matchIds[0] = await Match.addMatch(matchUser3ToProj4);
+  // matchIds[1] = await Match.addMatch(matchUser4ToProj3);
 
 
   //***************************************** 
@@ -120,9 +115,9 @@ async function commonnBeforeAll(){
 
     console.log( {
       projectIds,
-      projectMemberIds,
-      matchIds,
-      messageIds
+    //   projectMemberIds,
+    //   matchIds,
+    //   messageIds
     });
 
   };
@@ -151,8 +146,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   afterAllEnd,
-  // user3Token,
-  // user4Token,
   projectIds,
   projectMemberIds,
   matchIds,

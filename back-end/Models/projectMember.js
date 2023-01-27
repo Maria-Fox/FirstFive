@@ -1,5 +1,5 @@
 const db = require("../db");
-const { NotFoundError, ExpressError } = require("../ErrorHandling/ExpressError");
+const { NotFoundError, ExpressError, BadRequestError } = require("../ErrorHandling/ExpressError");
 const Project = require("./project");
 
 class Project_Member {
@@ -38,9 +38,6 @@ class Project_Member {
 
   static async viewAllMembers(project_id){
 
-    // Throws error if project does not exist.
-    // let existingProject = await Project.viewSingleProject(project_id);
-
     let allMembersRes = await db.query(
       `SELECT users.username,
               users.bio
@@ -51,7 +48,7 @@ class Project_Member {
     );
 
     let validMembers = allMembersRes.rows;
-    if(!validMembers) throw new ExpressError("No members, yet!")
+    if(!validMembers) throw new BadRequestError();
     
     let projetDataAndMembers = {
       // "proj_data": {...existingProject},

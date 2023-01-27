@@ -10,7 +10,7 @@
     ],
     "properties": {
         "project_id": {
-            "type": "integer",
+            "type": "string",
             "default": 0,
             "title": "The project_id Schema",
             "examples": [

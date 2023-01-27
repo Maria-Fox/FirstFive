@@ -26,7 +26,7 @@ async function (req, res, next){
     let userData = await User.findUser(req.params)
     return res.status(200).json({"userData": userData});
   } catch(e){
-    return(e);
+    return next(e);
   }
 });
 
@@ -39,7 +39,7 @@ async function (req, res, next){
 
     if(!validFieldData.valid){
       let fieldErrors = validFieldData.errors.map(e => e.stack);
-      return BadRequestError(fieldErrors);
+      throw new BadRequestError(fieldErrors);
     };
 
     // passing in the user who needs updating & the fields for updating.
@@ -54,7 +54,7 @@ async function (req, res, next){
 router.delete("/:username", ensureLoggedIn, ensureAuthUser, async function (req, res, next){
   try{
 
-    let deletedUser = await User.deleteUser(req.body);
+    let deletedUser = await User.deleteUser(req.params);
     return res.status(200).json({"Success": "Deleted user"});
   } catch(e){
     return next(e);

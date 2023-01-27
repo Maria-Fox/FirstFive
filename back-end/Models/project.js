@@ -2,6 +2,7 @@ const { resourceLimits } = require("worker_threads");
 const db = require("../db");
 const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
 const {ExpressError, NotFoundError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
+const Match = require("./match");
 
 class Project {
 
@@ -34,7 +35,17 @@ class Project {
     );
 
     let newProject = newProjectRes.rows[0];
-    console.log(newProject, "***********")
+
+    // user who creates the project is instantly matched to the project for furthher requests.
+
+    let userMatchedToProj = await db.query(
+      `INSERT INTO matches (project_id, username)
+      VALUES($1, $2)
+      RETURNING id, project_id, username`,
+      [newProject.id, owner_username]
+    );
+
+    // console.log(newProject, "***********", "matched", userMatchedToProj)
 
     return newProject;
   };

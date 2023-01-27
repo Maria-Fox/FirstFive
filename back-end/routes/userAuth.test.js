@@ -16,10 +16,6 @@ beforeEach(commonBeforeEach); //start db
 afterEach(commonAfterEach); // rollback the previous changes
 afterAll(afterAllEnd); //close connection to db
 
-// 
-let authToken = createJWT({user: {username: "newUser"}});
-console.log(authToken);
-
 // All routes are prefixed with auth/
 describe("POST /register", function () {
   test("Register new user successfully", async function (){
@@ -37,4 +33,57 @@ describe("POST /register", function () {
     // received bearer token for future requests.
     expect(resp.body).toEqual({"signedJWT": expect.any(String)});
   });
+
+  test("bad request with missing data", async function () {
+    const resp = await request(app)
+        .post("/auth/register")
+        .send({
+          username: "onlyUsername",
+        });
+    expect(resp.statusCode).toEqual(400);
+  });
+});
+
+describe("POST /login", function () {
+  test("Valid user credentials to login - successful", async function (){
+    let userData = {
+      "username": "test1",
+      "password": "firstPw",
+    };
+
+    const resp = await request(app)
+          .post("/auth/login")
+          .send(userData);
+    
+    // received bearer token for future requests.
+    expect(resp.body).toEqual({"signedJWT": expect.any(String)});
+
+  });
+
+
+    test("Invalid user password to login - receive error", async function (){
+      let userData = {
+        "username": "test1",
+        "password": "123456789",
+      };
+  
+      const resp = await request(app)
+            .post("/auth/login")
+            .send(userData);
+      
+      expect(resp.statusCode).toEqual(401);
+    });
+
+    test("Invalid username to login - receive error", async function (){
+      let userData = {
+        "username": "test3",
+        "password": "firstPw",
+      };
+  
+      const resp = await request(app)
+            .post("/auth/login")
+            .send(userData);
+      
+      expect(resp.statusCode).toEqual(401);
+    });
 });

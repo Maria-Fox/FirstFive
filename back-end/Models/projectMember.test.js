@@ -66,7 +66,7 @@ describe("View all project members", function (){
     try{
       let noMemberProject = await Project_Member.viewAllMembers({project_id: projectIds[4]});
     } catch(e){
-      expect(e instanceof ExpressError).toBeTruthy();
+      expect(e instanceof BadRequestError).toBeTruthy();
     }
   })
 });

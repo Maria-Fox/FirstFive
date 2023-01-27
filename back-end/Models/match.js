@@ -1,7 +1,10 @@
 const e = require("cors");
 const db = require("../db");
-const {ExpressError, UnauthorizedError} = require("../ErrorHandling/expressError");
+const {ExpressError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
 const Project = require("./project");
+
+// console.log(typeof(Project), "******************");
+
 
 class Matches {
 
@@ -18,7 +21,7 @@ class Matches {
       [username, project_id]
     );
 
-    if (existingMatch.rows[0]) throw new ExpressError("Already matched to project!");
+    if (existingMatch.rows[0]) throw new BadRequestError();
 
     let newMatch = await db.query(
         `INSERT INTO matches (project_id, username)
@@ -50,7 +53,7 @@ class Matches {
         [username]
     );
 
-    if(!userMatches.rows) throw new ExpressError("You have no matches!");
+    if(!userMatches.rows) throw new BadRequestError();
 
     return userMatches.rows;
   };
@@ -59,7 +62,7 @@ class Matches {
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // View all users who matched with the project_id. AUTH REQUIRED. Returns project_id, desc, name, owner_username, username (of  matchee), bio
-
+  
   static async viewProjectUserMatches(project_id){
 
     // Throws errors if project_id does not exist.
@@ -93,7 +96,7 @@ class Matches {
 
     // return projectUserMatches.rows;
     return matches;
-  };
+    };
 
     // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
@@ -122,7 +125,7 @@ class Matches {
 // Confirm user sending request has matched with the project_id.
 
   static async confirmUserMatched(username, project_id){
-    console.log(`Confriming $${username} matched ${project_id}`);
+    console.log(`Confriming ${username} matched ${project_id}`);
 
     let matchedUser = await db.query(
       `SELECT username,

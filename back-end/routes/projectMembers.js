@@ -1,7 +1,9 @@
 let router = require("express").Router();
 let Project_Member = require("../Models/projectMember");
 const {ensureLoggedIn, ensureAuthUser, ensureProjectOwner, ensureUserProjMatch} = require("../Middleware/auth");
-
+const jsonschema = require("jsonschema");
+const ProjectMemberSchema = require("../Schemas/projMember.json");
+const {BadRequestError} = require("../ErrorHandling/expressError");
 
 // All routes are prefixed with "/projectmembers." AUTH REQUIRED FOR ALL.
 
@@ -11,7 +13,14 @@ ensureLoggedIn,
 ensureProjectOwner, 
 async function (req, res, next){
   try{
-      // Req.body holds the username to add.
+    let newUserData = {project_id: req.params.project_id, username: req.body.username}
+    let validFieldData = jsonschema.validate(newUserData, ProjectMemberSchema);
+
+    if(!validFieldData.valid){
+      let fieldErrors = validFieldData.errors.map(e => e.stack);
+      throw new BadRequestError(fieldErrors);
+    };
+
     let newMember = await Project_Member.addMember(req.params, req.body);
     return res.status(201).json(newMember);
 

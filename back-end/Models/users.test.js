@@ -4,7 +4,7 @@ const { commonnBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   afterAllEnd} = require("./forAllTests");
-const { BadRequestError, NotFoundError } = require("../ErrorHandling/expressError");
+const { BadRequestError, NotFoundError, UnauthorizedError } = require("../ErrorHandling/expressError");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 const bcryt = require("bcrypt");
 
@@ -75,7 +75,7 @@ describe("Authenticate user against db, return app results", function () {
 
         let validUser = await User.authenticateUser(userData);
       } catch(e){
-        expect(e instanceof BadRequestError).toBeTruthy();
+        expect(e instanceof UnauthorizedError).toBeTruthy();
       };
     });
 });

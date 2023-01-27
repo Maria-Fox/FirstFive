@@ -68,6 +68,7 @@ async function ensureProjectOwner(req, res, next) {
     // console.log("from request ***", projectData)
 
     if(projectData.owner_username === res.locals.user.username){
+      console.log("CONFIRMED PROJ OWNER****")
       return next();
     } else {
       throw new UnauthorizedError();
