@@ -1,7 +1,7 @@
 const e = require("cors");
 const db = require("../db");
-const {ExpressError, UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
-const Project = require("./project");
+const {ExpressError, UnauthorizedError, BadRequestError, NotFoundError} = require("../ErrorHandling/expressError");
+// const Project = require("./project");
 
 // console.log(typeof(Project), "******************");
 
@@ -21,7 +21,7 @@ class Matches {
       [username, project_id]
     );
 
-    if (existingMatch.rows[0]) throw new BadRequestError();
+    if (!existingMatch.rows[0]) throw new BadRequestError();
 
     let newMatch = await db.query(
         `INSERT INTO matches (project_id, username)
@@ -66,8 +66,21 @@ class Matches {
   static async viewProjectUserMatches(project_id){
 
     // Throws errors if project_id does not exist.
-    let existingProject = await Project.viewSingleProject(project_id);
-    console.log("project exists", existingProject);
+    // let existingProject = await Project.viewSingleProject(project_id);
+
+    let existingProject = await db.query(
+      `SELECT owner_username AS owner_username,
+              name,
+              project_desc,
+              github_repo,
+              timeframe
+      FROM projects
+      WHERE id = $1`,
+      [project_id.project_id]
+    );
+
+    if(!existingProject.rows[0]) throw new NotFoundError();
+    existingProject = existingProject.rows[0];
 
     let projectUserMatches = await db.query(
       `SELECT m.username AS user_matched,
@@ -92,7 +105,9 @@ class Matches {
         "timeframe" :existingProject.timeframe
       },
       "user_matches": {...allmatches}
-    }
+    };
+
+    console.log("matches is", matches);
 
     // return projectUserMatches.rows;
     return matches;

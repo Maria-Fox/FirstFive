@@ -18,19 +18,20 @@ afterAll(afterAllEnd); //close connection to db
 
 describe("Add match", function (){
   test("Add valid match", async function (){
-    let newMatch = await Match.addMatch({project_id: projectIds[3], username: 'test1'});
+    let newMatch = await Match.addMatch({project_id: projectIds[1], username: 'test4'});
 
-    expect(newMatch.project_id).toEqual(projectIds[3]);
-    expect(newMatch.username).toEqual('test1');
+    expect(newMatch.project_id).toEqual(projectIds[1]);
+    expect(newMatch.username).toEqual('test4');
 
     let dbCheck = await db.query(
       `SELECT * 
       FROM matches
       WHERE project_id = $1 AND username = $2`,
-      [projectIds[3], 'test1']
+      [projectIds[1], 'test4']
     );
 
-    expect(dbCheck.rows.length).toEqual(1);
+    // The project owner & new match 
+    expect(dbCheck.rows.length).toEqual(2);
   });
 
   test("Deny duplicate match request", async function (){
@@ -85,6 +86,7 @@ describe("View project user matches", function (){
   test("View users who have matched project_id", async function (){
     let usersWhoMatched = await Match.viewProjectUserMatches({project_id: projectIds[0]});
 
+    // view the newly added user match
     expect(usersWhoMatched).toEqual(
       {
         project_data: {
