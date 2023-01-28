@@ -4,6 +4,7 @@ const {UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressEr
 const Project = require("../Models/project");
 const Match = require("../Models/match");
 const db = require("../db");
+const app = require("../app");
 
 // If a token is provided it verify against secret_key. If valid store on res.local.user. Otherwise, return an unauthorized error using next.
 
