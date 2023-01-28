@@ -1,9 +1,6 @@
 const e = require("cors");
 const db = require("../db");
 const {ExpressError, UnauthorizedError, BadRequestError, NotFoundError} = require("../ErrorHandling/expressError");
-// const Project = require("./project");
-
-// console.log(typeof(Project), "******************");
 
 
 class Matches {
@@ -106,8 +103,6 @@ class Matches {
       },
       "user_matches": {...allmatches}
     };
-
-    console.log("matches is", matches);
 
     // return projectUserMatches.rows;
     return matches;

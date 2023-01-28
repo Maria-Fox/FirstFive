@@ -1,6 +1,5 @@
 const db = require("../db");
 const { NotFoundError, ExpressError, BadRequestError } = require("../ErrorHandling/ExpressError");
-// const Project = require("./project");
 
 class Project_Member {
 
@@ -51,7 +50,6 @@ class Project_Member {
     if(!validMembers) throw new BadRequestError();
     
     let projetDataAndMembers = {
-      // "proj_data": {...existingProject},
       "proj_members": {...validMembers}
     };
 

@@ -26,5 +26,5 @@ let confirmMutualMatches = async function (userToView, appUser){
     };
 };
 
-module.exports = {confirmMutualMatches : confirmMutualMatches};
+module.exports = confirmMutualMatches;
 

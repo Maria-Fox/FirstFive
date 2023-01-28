@@ -4,7 +4,7 @@ const {ensureLoggedIn, ensureAuthUser, ensureMutualMatch} = require("../Middlewa
 const updateUserSchema = require("../Schemas/updateUser.json");
 const jsonschema = require("jsonschema");
 let {BadRequestError, UnauthorizedError} = require("../ErrorHandling/expressError");
-const {confirmMutualMatches} = require("../HelperFunctions/MutualMatch");
+const confirmMutualMatches = require("../HelperFunctions/MutualMatch");
 
 // Routes prefixed with "users/". AUTH REQUIRED FOR ALL.
 
