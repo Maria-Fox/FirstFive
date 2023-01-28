@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const User = require("../Models/user");
-const {ensureLoggedIn, ensureAuthUser } = require("../Middleware/auth");
+const {ensureLoggedIn, ensureAuthUser, ensureMutualMatch} = require("../Middleware/auth");
 const updateUserSchema = require("../Schemas/updateUser.json");
 const jsonschema = require("jsonschema");
 let {BadRequestError, UnauthorizedError} = require("../ErrorHandling/expressError");
-
+const {confirmMutualMatches} = require("../HelperFunctions/MutualMatch");
 
 // Routes prefixed with "users/". AUTH REQUIRED FOR ALL.
 
@@ -20,9 +20,11 @@ async function (req, res, next){
 });
 
 // Return given user profile/ bio.
-router.get("/:username", ensureLoggedIn, 
+router.get("/:username", ensureLoggedIn, ensureMutualMatch,
 async function (req, res, next){
   try{
+
+    // let mutualMatchSuccess = await confirmMutualMatches(req.params.username, res.locals.user.username);
     let userData = await User.findUser(req.params)
     return res.status(200).json({"userData": userData});
   } catch(e){

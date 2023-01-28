@@ -1,9 +1,10 @@
 const jsonWebToken = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config");
-const {UnauthorizedError} = require("../ErrorHandling/expressError");
+const {UnauthorizedError, BadRequestError} = require("../ErrorHandling/expressError");
 const Project = require("../Models/project");
 const Match = require("../Models/match");
-
+const db = require("../db");
+const { set } = require("../app");
 
 // If a token is provided it verify against secret_key. If valid store on res.local.user. Otherwise, return an unauthorized error using next.
 
@@ -96,11 +97,47 @@ async function ensureUserProjMatch(req, res, next){
   };
 };
 
+// Mutual match OR app user wants to visit own messages, profile, etc.
+async function ensureMutualMatch(req, res, next){
+  try{
+    console.log("ENSURE MUTUAL MATCH")
+
+    let userToView = req.params.username;
+    let appUser = res.locals.user.username;
+
+    let allProjects = await db.query(
+              `SELECT project_id
+              FROM matches
+              WHERE username =$1 OR username = $2`,
+              [userToView, appUser]
+    );
+
+    // If there are two matching id's they have matched at least 1 matching project b/w each other.
+    if(!allProjects.rows) throw new UnauthorizedError();
+    let allProjIds = [...allProjects.rows.map(id => id.project_id)];
+    console.log(allProjIds)
+
+    // Create a set with all the id's IF they're the same length there are no mutual matches.
+    let setOfIds = new Set(allProjIds)
+    console.log(setOfIds);
+
+    // All for user to view their own messages/profile/etc.
+    if(req.params.username == res.locals.user.username || setOfIds.size !== allProjIds.length){
+      next();
+    } else {
+      throw new UnauthorizedError();
+    }
+  } catch(e){
+    next(e);
+  }
+}
+
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureAuthUser,
   ensureProjectOwner,
-  ensureUserProjMatch
+  ensureUserProjMatch,
+  ensureMutualMatch
 };
