@@ -184,18 +184,6 @@ class Project {
     avoidIds = `(${avoidIds})`;
     console.log(`${avoidIds}`);
 
-    let querySyntax = `SELECT id,
-        owner_username, 
-        name,
-        project_desc, 
-        timeframe, 
-        github_repo
-      FROM projects
-      WHERE id NOT IN ${avoidIds}
-      ORDER BY name`;
-
-    console.log("SYNTAX :", querySyntax);
-
     let projectResults = await db.query(
       `SELECT id,
               owner_username, 
@@ -204,9 +192,8 @@ class Project {
               timeframe, 
               github_repo
       FROM projects
-      WHERE id NOT IN ($1)
-      ORDER BY name`
-    , [avoidIds]);
+      WHERE id NOT IN ${avoidIds}
+      ORDER BY name`);
     
 
     let allProjects = projectResults.rows;

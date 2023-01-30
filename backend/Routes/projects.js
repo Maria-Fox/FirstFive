@@ -38,6 +38,7 @@ router.get("/all", ensureLoggedIn, async function (req, res, next){
   };
 });
 
+// Returns the projects a user has NOT MATCHED WITH**
 router.get("/view", ensureLoggedIn, async function (req, res, next){
   try{
     let allProjects = await Project.viewNonMatchedProjs(res.locals.user.username);
