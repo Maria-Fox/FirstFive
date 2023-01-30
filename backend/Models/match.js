@@ -18,7 +18,7 @@ class Matches {
       [username, project_id]
     );
 
-    if (!existingMatch.rows[0]) throw new BadRequestError();
+    if (existingMatch.rows[0]) throw new BadRequestError();
 
     let newMatch = await db.query(
         `INSERT INTO matches (project_id, username)

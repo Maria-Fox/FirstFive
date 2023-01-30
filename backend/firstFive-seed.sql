@@ -43,5 +43,5 @@ VALUES ('softwareDev1',
 -- INSERT INTO matches (project_id, username) VALUES (3, 'bestUxDesigner');
 -- INSERT INTO users (username, password, , email, bio ) VALUES ('terminalUser', '123456pw', '9165286419', 'email@bestemail.com', 'this is bio');
 
--- INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo) VALUES ('fromCLI','alalalla','Build out ...... chosen by the group! Open to other additional technologies.','1 day','https://github.com/');
+-- INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo) VALUES ('blah','test','math blah.','1 day','https://github.com/');
 INSERT INTO messages (message_from, message_to, body, sent_at) VALUES ('softwareDev1', 'fromCLI', 'from terminal body', current_timestamp);

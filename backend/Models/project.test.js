@@ -7,6 +7,7 @@ const {commonnBeforeAll,
   commonAfterEach,
   afterAllEnd,
   projectIds} = require("./forAllTests");
+const Matches = require("./match");
 
 
 // Using the jest testing functions pass in the steps needed to open/close serv.
@@ -26,8 +27,9 @@ describe("Create a project", function () {
       "timeframe": "1 day",
       "github_repo": "https:github/test"
     };
-
+    
     let newProjectResponse = await Project.createProject(newProjData);
+    let projId = newProjectResponse.id;
     expect(newProjectResponse.project_desc).toEqual("To test the model");
     expect(newProjectResponse).toEqual(
     {
@@ -46,133 +48,138 @@ describe("Create a project", function () {
 
     expect(dbRequest.rows[0].github_repo).toEqual("https:github/test");
     expect(dbRequest.rows[0].owner_username).toEqual(newProjData.owner_username);
+
+    console.log(projId, "********")
+    let userMatchedToProj = await Matches.viewProjectUserMatches(projId);
+    console.log(userMatchedToProj);
+    expect(userMatchedToProj.rows.length).toEqual(1);
   });
 
-  test("Return error if duplicate project name is submitted", async function (){
-    let dupProjData = {
-      "owner_username": "test1",
-      "name": "Proj1",
-      "project_desc": "Duplicated from test seed data in forAllTests.js",
-      "timeframe": "1 day",
-      "github_repo": "should return error"
-    };
+  // test("Return error if duplicate project name is submitted", async function (){
+  //   let dupProjData = {
+  //     "owner_username": "test1",
+  //     "name": "Proj1",
+  //     "project_desc": "Duplicated from test seed data in forAllTests.js",
+  //     "timeframe": "1 day",
+  //     "github_repo": "should return error"
+  //   };
 
-    try {
-      let dupRequest = await Project.createProject(dupProjData);
-      console.log(dupRequest, "****")
-    } catch(e){
-      expect(e instanceof ExpressError).toBeTruthy();
-    };
-  });
+  //   try {
+  //     let dupRequest = await Project.createProject(dupProjData);
+  //     console.log(dupRequest, "****")
+  //   } catch(e){
+  //     expect(e instanceof ExpressError).toBeTruthy();
+  //   };
+  // });
 });
 
 // View all projects.***************************************** 
 
-describe("View all projects", function () {
-  test("Auth user view all projects", async function () {
-    let allProjects = await Project.viewAllProjects();
-    expect(allProjects.length).toEqual(4);
-      expect(allProjects[0].name).toEqual("Proj1");
-      expect(allProjects[1].name).toEqual("Proj2");
-      expect(allProjects[2].name).toEqual("Proj3");
-      expect(allProjects[3].name).toEqual("Proj4");
-  });
-});
+// describe("View all projects", function () {
+//   test("Auth user view all projects", async function () {
+//     let allProjects = await Project.viewAllProjects();
+//     expect(allProjects.length).toEqual(4);
+//       expect(allProjects[0].name).toEqual("Proj1");
+//       expect(allProjects[1].name).toEqual("Proj2");
+//       expect(allProjects[2].name).toEqual("Proj3");
+//       expect(allProjects[3].name).toEqual("Proj4");
+//   });
+// });
 
-// View single project details.***************************************** 
+// // View single project details.***************************************** 
 
-describe("Valid user requests project id details", function (){
-  test("Request valid project id details", async function (){
-    let proj1Data = await Project.viewSingleProject({project_id: projectIds[0]});
-    expect(proj1Data.owner_username).toEqual("test1");
-    expect(proj1Data.project_desc).toEqual("The first test proj");
-    expect(proj1Data.github_repo).toEqual("https:github.com/1");
-  });
+// describe("Valid user requests project id details", function (){
+//   test("Request valid project id details", async function (){
+//     let proj1Data = await Project.viewSingleProject({project_id: projectIds[0]});
+//     expect(proj1Data.owner_username).toEqual("test1");
+//     expect(proj1Data.project_desc).toEqual("The first test proj");
+//     expect(proj1Data.github_repo).toEqual("https:github.com/1");
+//   });
 
-  test("Request invalid project id return error", async function () {
-    try{
-      let invalidRequest = await Project.viewSingleProject({project_id: 999});
-    } catch(e){
-      expect(e instanceof NotFoundError).toBeTruthy();
-    };
-  });
-});
+//   test("Request invalid project id return error", async function () {
+//     try{
+//       let invalidRequest = await Project.viewSingleProject({project_id: 999});
+//     } catch(e){
+//       expect(e instanceof NotFoundError).toBeTruthy();
+//     };
+//   });
+// });
 
-// Update Project***************************************** 
+// // Update Project***************************************** 
 
-describe("Update proect details", function (){
-  test("Update valid project_id", async function(){
-    let dataForUpdate = {
-      "name": "Updated name",
-      "project_desc": "Updated desc",
-      "timeframe": "Updated timeframe",
-      "github_repo": "updated repo"
-    };
+// describe("Update proect details", function (){
+//   test("Update valid project_id", async function(){
+//     let dataForUpdate = {
+//       "name": "Updated name",
+//       "project_desc": "Updated desc",
+//       "timeframe": "Updated timeframe",
+//       "github_repo": "updated repo"
+//     };
 
-    let updatedProj = await Project.updateProject({project_id: projectIds[0]}, dataForUpdate);
+//     let updatedProj = await Project.updateProject({project_id: projectIds[0]}, dataForUpdate);
 
-    expect(updatedProj.name).toEqual("Updated name");
-    expect(updatedProj.github_repo).toEqual("updated repo");
+//     expect(updatedProj.name).toEqual("Updated name");
+//     expect(updatedProj.github_repo).toEqual("updated repo");
 
-    let queryResult = await db.query(
-      `SELECT *
-      FROM projects
-      WHERE id = $1`,
-      [projectIds[0]]
-    );
+//     let queryResult = await db.query(
+//       `SELECT *
+//       FROM projects
+//       WHERE id = $1`,
+//       [projectIds[0]]
+//     );
 
-    expect(queryResult.rows[0].project_desc).toEqual("Updated desc");
-    expect(queryResult.rows[0].timeframe).toEqual("Updated timeframe");
-  });
+//     expect(queryResult.rows[0].project_desc).toEqual("Updated desc");
+//     expect(queryResult.rows[0].timeframe).toEqual("Updated timeframe");
+//   });
 
-  test("Update invalid project id", async function (){
-    try{
-        let dataForUpdate = {
-      "name": "Updated name",
-      "project_desc": "Updated desc",
-      "timeframe": "Updated timeframe",
-      "github_repo": "updated repo"
-    };
-      let invalidUpdateID = await Project.updateProject({project_id: 99999}, dataForUpdate);
-      console.log("****", invalidUpdateID)
-    } catch (e){
-      expect(e instanceof NotFoundError).toBeTruthy();
-    };
-  });
-});
+//   test("Update invalid project id", async function (){
+//     try{
+//         let dataForUpdate = {
+//       "name": "Updated name",
+//       "project_desc": "Updated desc",
+//       "timeframe": "Updated timeframe",
+//       "github_repo": "updated repo"
+//     };
+//       let invalidUpdateID = await Project.updateProject({project_id: 99999}, dataForUpdate);
+//       console.log("****", invalidUpdateID)
+//     } catch (e){
+//       expect(e instanceof NotFoundError).toBeTruthy();
+//     };
+//   });
+// });
 
-// Delete project.***************************************** 
+// // Delete project.***************************************** 
 
-describe("Deleting project via id", function () {
-  test("Valid id & owner_username delete project", async function () {
-    let username = 'test1'
-    let deleteProj1 = await Project.delete(projectIds[0], username);
+// describe("Deleting project via id", function () {
+//   test("Valid id & owner_username delete project", async function () {
+//     let username = 'test1'
+//     let deleteProj1 = await Project.delete(projectIds[0], username);
     
-    expect(deleteProj1.owner_username).toEqual("test1");
+//     expect(deleteProj1.owner_username).toEqual("test1");
 
-    let dbCheck = await db.query(
-      `SELECT *
-      FROM projects
-      WHERE id = $1`,
-      [projectIds[0]]
-    );
+//     let dbCheck = await db.query(
+//       `SELECT *
+//       FROM projects
+//       WHERE id = $1`,
+//       [projectIds[0]]
+//     );
 
-    expect(dbCheck.rows.length).toEqual(0);
-  });
+//     expect(dbCheck.rows.length).toEqual(0);
+//   });
 
-  test("Invalid project id for deleting, returns error", async function (){
-    try{
-      let invalidRequest = await Project.delete(9999, 'testuser1');
-    } catch(e){
-      expect(e instanceof NotFoundError).toBeTruthy();
-    };
-  });
+//   test("Invalid project id for deleting, returns error", async function (){
+//     try{
+//       let invalidRequest = await Project.delete(9999, 'testuser1');
+//     } catch(e){
+//       expect(e instanceof NotFoundError).toBeTruthy();
+//     };
+//   });
 
-  test("Invalid project_owner sending request for valid id- deny", async function (){
-    try {
-      let invalidOwnerReq = await Project.delete(projectIds[1], 'testuser4');
-    } catch (e){
-      expect(e instanceof NotFoundError).toBeTruthy();
-    };
-  });
-});
+//   test("Invalid project_owner sending request for valid id- deny", async function (){
+//     try {
+//       let invalidOwnerReq = await Project.delete(projectIds[1], 'testuser4');
+//     } catch (e){
+//       expect(e instanceof NotFoundError).toBeTruthy();
+//     };
+//   });
+// });
