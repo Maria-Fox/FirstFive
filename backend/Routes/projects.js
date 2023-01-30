@@ -38,6 +38,15 @@ router.get("/all", ensureLoggedIn, async function (req, res, next){
   };
 });
 
+router.get("/view", ensureLoggedIn, async function (req, res, next){
+  try{
+    let allProjects = await Project.viewNonMatchedProjs(res.locals.user.username);
+    return res.status(200).json(allProjects);
+  } catch(e){
+    next(e);
+  };
+});
+
 // Returns project detail including: id, owner_username, name, project_desc, timeframe.
 router.get("/:project_id", ensureLoggedIn, async function (req, res, next){
   try {

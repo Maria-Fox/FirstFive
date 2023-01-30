@@ -167,6 +167,54 @@ class Project {
     return projectData.rows[0];
   };
 
+  // Change projects displayed as of 1/29
+
+  static async viewNonMatchedProjs(username){
+    let matchedProjIds = await db.query (
+      `SELECT project_id
+      FROM matches
+      Where username = $1`,
+      [username]
+    );
+
+    console.log(matchedProjIds.rows.map(proj => proj.project_id), "********");
+
+    let avoidIds = matchedProjIds.rows.map(match => match.project_id) || "";
+    // need to remove from arra
+    avoidIds = `(${avoidIds})`;
+    console.log(`${avoidIds}`);
+
+    let querySyntax = `SELECT id,
+        owner_username, 
+        name,
+        project_desc, 
+        timeframe, 
+        github_repo
+      FROM projects
+      WHERE id NOT IN ${avoidIds}
+      ORDER BY name`;
+
+    console.log("SYNTAX :", querySyntax);
+
+    let projectResults = await db.query(
+      `SELECT id,
+              owner_username, 
+              name,
+              project_desc, 
+              timeframe, 
+              github_repo
+      FROM projects
+      WHERE id NOT IN ($1)
+      ORDER BY name`
+    , [avoidIds]);
+    
+
+    let allProjects = projectResults.rows;
+
+    if(!projectResults) throw new ExpressError("There are no projects, yet! Propose a new project.");
+
+    return allProjects;
+  };
 
   // class end bracket
 };
