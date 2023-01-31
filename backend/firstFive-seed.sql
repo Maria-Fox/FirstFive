@@ -35,7 +35,7 @@ VALUES ('softwareDev1',
             'https://github.com/'),
           ('Delia_Designs',
               'Design a smart TV APP layout ',
-              'Beautifully design an interface for smart TV platforms. Include comprehnsive resting for all devices.',
+              'Beautifully design an interface for smart TV platforms. Include comprehnsive testing for all devices.',
               '3-6 months',
               'https://github.com/'
           );
@@ -44,4 +44,4 @@ VALUES ('softwareDev1',
 -- INSERT INTO users (username, password, , email, bio ) VALUES ('terminalUser', '123456pw', '9165286419', 'email@bestemail.com', 'this is bio');
 
 -- INSERT INTO projects(owner_username, name, project_desc, timeframe, github_repo) VALUES ('blah','test','math blah.','1 day','https://github.com/');
-INSERT INTO messages (message_from, message_to, body, sent_at) VALUES ('softwareDev1', 'fromCLI', 'from terminal body', current_timestamp);
+-- INSERT INTO messages (message_from, message_to, body, sent_at) VALUES ('softwareDev1', 'fromCLI', 'from terminal body', current_timestamp);

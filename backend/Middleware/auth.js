@@ -13,38 +13,44 @@ function authenticateJWT(req, res, next){
     // signed JWT comes in from req.headers
 
     const authHeader = req.headers && req.headers.authorization;
+    console.log(authHeader, "AUTH HEADER")
 
     if(authHeader){
       // use regex to replace "Bearer :token", removing space. Trim.
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
-
+      console.log(req.headers.authorization, "49534itnelkrngdfg");
       // returns token payload if token was signed w/ db SECRET_KEY.
       let verifiedUser = jsonWebToken.verify(token, SECRET_KEY);
       // The res.locals property is an object that contains response local variables scoped to the request and because of this, it is only available to the view(s) rendered during that request/response cycle (if any).
 
       // EX: stores token payload {username: "exampleUser"} on res for client to utilize.
+      console.log(verifiedUser, "THIS THIS THIS")
       res.locals.user = verifiedUser;
       console.log("we have res.locals.user", res.locals.user)
     };
     // move onto next route after completing above.
     return next();
   } catch(e){
+    console.log(e.message);
     // specfically not passing e in. If there is no authHeader simply move onto the nex route.
     return next();
   };
 };
 
 // ensure there is a user scoped to local res.locals.user
+// ensure there is a user scoped to local res.locals.user
 function ensureLoggedIn(req, res, next){
 
   try{
     if(!res.locals.user){
+      console.log(req.headers.authorization, "HERERERERE")
       throw new UnauthorizedError();
     };
 
     // if res.locals property does hold a user move onto next route.
     return next();
   } catch(e){
+    console.log(e.message, "LOOK HERE***")
     return next(e);
   };
 };
@@ -101,6 +107,12 @@ async function ensureUserProjMatch(req, res, next){
 async function ensureMutualMatch(req, res, next){
   try{
     console.log("ENSURE MUTUAL MATCH")
+    console.log(req.params.username, res.locals.user.username)
+
+    // If a user is looking at their own projects
+    if(req.params.username == res.locals.user.username){
+      return next();
+    };
 
     let userToView = req.params.username;
     let appUser = res.locals.user.username;
@@ -122,7 +134,7 @@ async function ensureMutualMatch(req, res, next){
     console.log(setOfIds);
 
     // All for user to view their own messages/profile/etc.
-    if(req.params.username == res.locals.user.username || setOfIds.size !== allProjIds.length){
+    if(setOfIds.size !== allProjIds.length){
       next();
     } else {
       throw new UnauthorizedError();

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../Models/user");
-const {ensureLoggedIn, ensureAuthUser, ensureMutualMatch} = require("../Middleware/auth");
+const {ensureLoggedIn, ensureAuthUser, ensureMutualMatch, authenticateJWT} = require("../Middleware/auth");
 const updateUserSchema = require("../Schemas/updateUser.json");
 const jsonschema = require("jsonschema");
 let {BadRequestError, UnauthorizedError} = require("../ErrorHandling/expressError");
