@@ -67,7 +67,7 @@ class User {
         return user;
       };
     };
-    throw new UnauthorizedError();
+    throw new UnauthorizedError("Invalid username or password.");
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
