@@ -48,6 +48,16 @@ router.get("/view", ensureLoggedIn, async function (req, res, next) {
   };
 });
 
+// Returns the projects a user has NOT MATCHED WITH**
+router.get("/carousel", ensureLoggedIn, async function (req, res, next) {
+  try {
+    let allProjects = await Project.carouselProjects(res.locals.user.username);
+    return res.status(200).json(allProjects);
+  } catch (e) {
+    next(e);
+  };
+});
+
 // Returns the projects a user has created.
 router.get("/created/by/:username", ensureLoggedIn, async function (req, res, next) {
   try {

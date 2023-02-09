@@ -2,6 +2,8 @@
 const db = require("../db");
 const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
 const { ExpressError, NotFoundError, UnauthorizedError, BadRequestError } = require("../ErrorHandling/expressError");
+const RandomItemFromNonMatchedIds = require("../HelperFunctions/RandomItemFromNonMatchedIds")
+
 
 class Project {
 
@@ -199,7 +201,7 @@ class Project {
     return projectData.rows[0];
   };
 
-  // Change projects displayed as of 1/29
+  // Change projects displayed as of 1/29 ********************************
 
   static async viewNonMatchedProjs(username) {
     let matchedProjIds = await db.query(
@@ -212,7 +214,7 @@ class Project {
     console.log(matchedProjIds.rows.map(proj => proj.project_id), "********");
 
     let avoidIds = matchedProjIds.rows.map(match => match.project_id) || "";
-    // need to remove from arra
+    // need to remove from array
     avoidIds = `(${avoidIds})`;
     console.log(`${avoidIds}`);
 
@@ -234,6 +236,90 @@ class Project {
 
     return allProjects;
   };
+
+  // Carousel Display of 2/9 ********************************
+
+  static async carouselProjects(username) {
+
+
+    // Grab the existing project id's the user has already matched 
+    let matchedProjIds = await db.query(
+      `SELECT project_id
+      FROM matches
+      Where username = $1`,
+      [username]
+    );
+
+    // ***** If the USER HAS NO MATCHING PROJECTS ....
+    if (matchedProjIds.rows.length == 0) {
+
+      // Grab all the existing project ids.
+      let projectIds = await db.query(
+        `SELECT id 
+        FROM projects`
+      );
+
+      projectIds = projectIds.rows.map(proj => proj.id)
+
+      // Shuffle the array, grab a random project. Send db request. Return {} with data.
+      let itemToDisplay = RandomItemFromNonMatchedIds(projectIds);
+
+      let project_data = await db.query(
+        `SELECT id,
+                owner_username,
+                name,
+                project_desc,
+                timeframe,
+                github_repo
+          FROM projects where id = $1`,
+        [itemToDisplay]
+      );
+
+      return [project_data.rows[0]];
+    };
+
+
+    // *****If user HAS EXISTING MATCHES proceed with below.
+
+
+    // Grab all the ids user HAS matched with.
+    let avoidIds = matchedProjIds.rows.map(match => match.project_id) || "";
+    // need to remove from array
+
+    avoidIds = `(${avoidIds})`;
+    // console.log(` avoid these ids : ${avoidIds}`);
+
+    // Grab all ids user has NOT matched with.
+    let arrayOfProjectsToMatch = await db.query(
+      `SELECT id
+      FROM projects
+      WHERE id NOT IN ${avoidIds}`
+    );
+
+    arrayOfProjectsToMatch = arrayOfProjectsToMatch.rows.map(proj => proj.id);
+
+    // If there's nothing returned user matched all projects.
+    if (arrayOfProjectsToMatch.length == 0) throw BadRequestError("You have matched all projects!")
+
+    let itemToDisplay = RandomItemFromNonMatchedIds(arrayOfProjectsToMatch);
+    console.log(itemToDisplay, "DISPLAY THIS")
+
+    let randomProjData = await db.query(
+      `SELECT id,
+              owner_username,
+              name,
+              project_desc,
+              timeframe,
+              github_repo
+        FROM projects 
+        WHERE id = $1`,
+      [itemToDisplay]
+    );
+
+    console.log(randomProjData.rows)
+    return [randomProjData.rows[0]];
+  };
+
 
   // class end bracket
 };
