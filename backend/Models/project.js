@@ -130,13 +130,13 @@ class Project {
 
     // See if project name already exists.IF so, notify user to pick a new name.
 
-    let existingProjName = await db.query(`
-        SELECT name 
-        FROM projects
-        WHERE name = $1`,
-      [reqData.name]);
+    // let existingProjName = await db.query(`
+    //     SELECT name 
+    //     FROM projects
+    //     WHERE name = $1`,
+    //   [reqData.name]);
 
-    if (existingProjName.rows[0]) throw new BadRequestError("Existing project name. Please choose a new name.");
+    // if (existingProjName.rows[0]) throw new BadRequestError("Existing project name. Please choose a new name.");
 
     // returns detrsuctured object where dbColumnsToUpdate holds parameterized queries. EX: dbColumnsToUpdate{project_desc = $1} 
     const { dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
@@ -157,7 +157,9 @@ class Project {
         github_repo`;
 
     // send off the db request to update adding in values & the actual co_username. Last to be added so it's the values.length+1
-    let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, project_id.project_id])
+    let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, project_id.project_id]);
+
+    console.log("@#$%(*%^", updatedProjResult.rows);
 
     let updatedProjData = updatedProjResult.rows[0];
 
