@@ -1,2 +1,7 @@
-To initialize and seed the databases please run the below in your terminal.
+To initialize and seed the databases please complete the follwoing:
+
+cd / backend
+
+
+run the below in your terminal.
 ```psql < firstFiveDB.sql```
