@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const {SECRET_KEY} = require("../config");
+const { SECRET_KEY } = require("../config");
 
 // returns signs JWT. Holds username.
 
-function createJWT(user){
+function createJWT(user) {
   let payload = {
     username: user.username
   };
@@ -13,4 +13,4 @@ function createJWT(user){
 
 module.exports = createJWT;
 
-// Token is later added to req header. {Authorization: token}
+// Token is later added to req header. {Authorization: Bearer ${token}}
