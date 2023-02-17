@@ -4,7 +4,6 @@ const express = require("express");
 let router = new express.Router();
 let registerUserSchema = require("../Schemas/registerUser.json");
 let authenticateUserSchema = require("../Schemas/loginUser.json");
-const { json, Router } = require("express");
 const { BadRequestError } = require("../ErrorHandling/expressError");
 const jsonschema = require("jsonschema");
 const createJWT = require("../HelperFunctions/Tokens");
@@ -15,11 +14,14 @@ const createJWT = require("../HelperFunctions/Tokens");
 
 router.post("/register", async function (req, res, next) {
   try {
+    console.log(req.body, "THIS IS BOD")
     let fieldInputs = jsonschema.validate(req.body, registerUserSchema);
     // if input is not valid notify user of errors.
+    console.log("#$%#$%#$%", fieldInputs.valid, "@#$@#$@#$@#");
     if (!fieldInputs.valid) {
-      const inputErrors = fieldInputs.errors.map(e => e.stack);
-      throw new BadRequestError(inputErrors);
+      // the error stack is harder for a user to understand. Keeping this in mind displaying error w/ requirements for user readability.
+      // const inputErrors = fieldInputs.errors.map(e => e.stack);
+      throw new BadRequestError("Please ensure all fields are completed and your password is at least 6 characters long.");
     };
 
     const newUser = await User.register(req.body);
