@@ -49,11 +49,11 @@ class Project_Member {
     let validMembers = allMembersRes.rows;
     if (!validMembers) throw new BadRequestError();
 
-    let projetDataAndMembers = {
-      "proj_members": { ...validMembers }
-    };
+    // let projetDataAndMembers = {
+    //   "proj_members": { ...validMembers }
+    // };
 
-    return projetDataAndMembers;
+    return validMembers;
   };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //

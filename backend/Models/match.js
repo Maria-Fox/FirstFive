@@ -1,6 +1,6 @@
 const e = require("cors");
 const db = require("../db");
-const {ExpressError, UnauthorizedError, BadRequestError, NotFoundError} = require("../ErrorHandling/expressError");
+const { ExpressError, UnauthorizedError, BadRequestError, NotFoundError } = require("../ErrorHandling/expressError");
 
 
 class Matches {
@@ -9,7 +9,7 @@ class Matches {
 
   // Creates new match. AUTH REQUIRED. Updates likes set to include the liked_username.
 
-  static async addMatch({project_id, username}){
+  static async addMatch({ project_id, username }) {
 
     let existingMatch = await db.query(
       `SELECT username
@@ -21,11 +21,11 @@ class Matches {
     if (existingMatch.rows[0]) throw new BadRequestError();
 
     let newMatch = await db.query(
-        `INSERT INTO matches (project_id, username)
+      `INSERT INTO matches (project_id, username)
         VALUES($1, $2)
         RETURNING id, project_id, username`,
-        [project_id, username]
-      );
+      [project_id, username]
+    );
 
     return newMatch.rows[0];
   };
@@ -35,7 +35,7 @@ class Matches {
   // View project current matches for username. AUTH REQUIRED. 
 
   // JOIN users on matches.username = users.username - IF YOU NEED TO JOIN USERS
-  static async viewAllUserMatches({username}){
+  static async viewAllUserMatches({ username }) {
 
     let userMatches = await db.query(
       `SELECT m.project_id,
@@ -46,11 +46,11 @@ class Matches {
               projects.github_repo
         FROM matches AS m
         JOIN projects on m.project_id = projects.id
-        WHERE username = $1`, 
-        [username]
+        WHERE username = $1`,
+      [username]
     );
 
-    if(!userMatches.rows) throw new BadRequestError();
+    if (!userMatches.rows) throw new BadRequestError();
 
     return userMatches.rows;
   };
@@ -59,8 +59,8 @@ class Matches {
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // View all users who matched with the project_id. AUTH REQUIRED. Returns project_id, desc, name, owner_username, username (of  matchee), bio
-  
-  static async viewProjectUserMatches(project_id){
+
+  static async viewProjectUserMatches(project_id) {
 
     // Throws errors if project_id does not exist.
     // let existingProject = await Project.viewSingleProject(project_id);
@@ -76,7 +76,7 @@ class Matches {
       [project_id.project_id]
     );
 
-    if(!existingProject.rows[0]) throw new NotFoundError();
+    if (!existingProject.rows[0]) throw new NotFoundError();
     existingProject = existingProject.rows[0];
 
     let projectUserMatches = await db.query(
@@ -85,34 +85,34 @@ class Matches {
         FROM matches AS m
         JOIN projects on m.project_id = projects.id
         JOIN users on m.username =  users.username
-        WHERE project_id = $1`, 
-        [project_id.project_id]
+        WHERE project_id = $1`,
+      [project_id.project_id]
     );
 
     let allmatches = projectUserMatches.rows;
 
-    if(!projectUserMatches.rows) throw new ExpressError("Project has no matches!");
+    if (!projectUserMatches.rows) throw new ExpressError("Project has no matches!");
 
     let matches = {
       "project_data": {
         "proj_owner": existingProject.owner_username,
-        "proj_name" :existingProject.name,
+        "proj_name": existingProject.name,
         "proj_desc": existingProject.project_desc,
-        "github_repo" : existingProject.github_repo,
-        "timeframe" :existingProject.timeframe
+        "github_repo": existingProject.github_repo,
+        "timeframe": existingProject.timeframe
       },
-      "user_matches": {...allmatches}
+      "user_matches": allmatches
     };
 
     // return projectUserMatches.rows;
     return matches;
-    };
+  };
 
-    // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
   // Remove match for username. Returns error is unsuccessful, otherwise no return value.
 
-  static async unmatchUser({username, project_id}){
+  static async unmatchUser({ username, project_id }) {
 
     let unmatchResult = await db.query(
       `DELETE 
@@ -124,17 +124,17 @@ class Matches {
 
     let unmatchConfirmation = unmatchResult.rows[0];
 
-    if(!unmatchConfirmation) throw new ExpressError("User is not matched with project.");
+    if (!unmatchConfirmation) throw new ExpressError("User is not matched with project.");
     return unmatchConfirmation;
   };
 
 
   // ************** USED FOR MIDDLEARE **************
-//  // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
+  //  // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 
-// Confirm user sending request has matched with the project_id.
+  // Confirm user sending request has matched with the project_id.
 
-  static async confirmUserMatched(username, project_id){
+  static async confirmUserMatched(username, project_id) {
     console.log(`Confriming ${username} matched ${project_id}`);
 
     let matchedUser = await db.query(
@@ -148,7 +148,7 @@ class Matches {
     let confirmedMatch = matchedUser.rows[0];
     console.log("!!!!!!!!!!", confirmedMatch);
 
-    if(!confirmedMatch){
+    if (!confirmedMatch) {
       throw new UnauthorizedError();
     };
 
@@ -156,7 +156,7 @@ class Matches {
   };
 
 
-// class closing bracket
+  // class closing bracket
 };
 
 
