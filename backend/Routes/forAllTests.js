@@ -12,7 +12,7 @@ const projectMemberIds = [];
 const messageIds = [];
 
 // Delete all items in each table.
-async function commonnBeforeAll(){
+async function commonnBeforeAll() {
   await db.query(`DELETE FROM messages`);
   await db.query(`DELETE FROM matches`);
   await db.query(`DELETE FROM project_members`);
@@ -50,20 +50,20 @@ async function commonnBeforeAll(){
   });
 
   let project3 = {
-      owner_username: "test3", 
-      name: "Proj3",
-      project_desc: "The third proj", 
-      timeframe: "3 days",
-      github_repo : "https:github.com/3"
-    };
+    owner_username: "test3",
+    name: "Proj3",
+    project_desc: "The third proj",
+    timeframe: "3 days",
+    github_repo: "https:github.com/3"
+  };
 
   let project4 = {
-      owner_username: "test4", 
-      name: "Proj4",
-      project_desc: "The fourth proj", 
-      timeframe: "2 days",
-      github_repo : "https:github.com/2"
-    };
+    owner_username: "test4",
+    name: "Proj4",
+    project_desc: "The fourth proj",
+    timeframe: "2 days",
+    github_repo: "https:github.com/2"
+  };
 
   //***************************************** 
   // Create projects & insert projectid's in array.
@@ -94,8 +94,8 @@ async function commonnBeforeAll(){
   // let member3InProj4 = ({project_id: projectIds[0]}, {username: 'test3'});
   // let member4InProj3 = ({project_id: projectIds[1]}, {username: 'test4'});
 
-  projectMemberIds[0] = await Project_Member.addMember({project_id: projectIds[0]}, {username: 'test3'});
-  projectMemberIds[1] = await Project_Member.addMember({project_id: projectIds[1]}, {username: 'test4'});
+  projectMemberIds[0] = await Project_Member.addMember({ project_id: projectIds[0] }, { username: 'test3' });
+  projectMemberIds[1] = await Project_Member.addMember({ project_id: projectIds[1] }, { username: 'test4' });
 
   //***************************************** 
   // Add Messages. Insert id's into messageId array.
@@ -110,18 +110,16 @@ async function commonnBeforeAll(){
 
 
   // messageIds[0] = await Message.createMessage(msgFrom3To4);
-  // console.log("DID THE FIRST ONE!!!!!!!")
   // messageIds[1] = await Message.createMessage(msgFrom4To3);
-  // console.log("DID THE SECOND ONE!!!!!!!")
 
-    console.log( {
-      projectIds,
+  console.log({
+    projectIds,
     //   projectMemberIds,
     //   matchIds,
-      // messageIds
-    });
+    // messageIds
+  });
 
-  };
+};
 
 
 // Initiates/starts transaction
@@ -135,7 +133,7 @@ async function commonAfterEach() {
 };
 
 // closes connection to server.
-async function afterAllEnd(){
+async function afterAllEnd() {
   await db.end();
 };
 

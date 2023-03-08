@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../db");
-const {BCRYPT_WORK_FACTOR} = require("../config");
+const { BCRYPT_WORK_FACTOR } = require("../config");
 const { app } = require("../app");
 
 const projectIds = [];
@@ -9,14 +9,14 @@ const projectMemberIds = [];
 const messageIds = [];
 
 // Delete all items in each table.
-async function commonnBeforeAll(){
+async function commonnBeforeAll() {
   await db.query(`DELETE FROM messages`);
   await db.query(`DELETE FROM matches`);
   await db.query(`DELETE FROM project_members`);
   await db.query(`DELETE FROM projects`);
   await db.query(`DELETE FROM users`);
 
-  let hashPassword  = async function(givenPassword) {
+  let hashPassword = async function (givenPassword) {
     return bcrypt.hash(givenPassword, BCRYPT_WORK_FACTOR);
   };
 
@@ -25,9 +25,9 @@ async function commonnBeforeAll(){
     VALUES ('test1', $1, 'test1@email.com', 'Bio-1'),
           ('test2', $2, 'test2gmail.com', 'Bio-2'),
           ('test3', $3, 'test3@aol.com', 'Bio-3'),
-          ('test4', $4, 'test4@aol.com', 'Bio-4')`, 
-    [await hashPassword("firstPw"), 
-    await hashPassword("secPW"), 
+          ('test4', $4, 'test4@aol.com', 'Bio-4')`,
+    [await hashPassword("firstPw"),
+    await hashPassword("secPW"),
     await hashPassword("thirdPW"),
     await hashPassword("fourthPW")]
   );
@@ -43,26 +43,24 @@ async function commonnBeforeAll(){
     RETURNING id`);
 
 
-    // We return the newly added proect ID's then add to array to test w/ later.
-    // starting at 0 index, removing 0, adding in all row id's
-    projectIds.splice(0, 0, ...newProjects.rows.map(r => r.id));
-    console.log("****The project ids are: ", projectIds);
+  // We return the newly added proect ID's then add to array to test w/ later.
+  // starting at 0 index, removing 0, adding in all row id's
+  projectIds.splice(0, 0, ...newProjects.rows.map(r => r.id));
 
   const matches = await db.query(
-      `INSERT INTO matches (project_id, username)
+    `INSERT INTO matches (project_id, username)
       VALUES ($1, 'test3'),
             ($2, 'test3'),
             ($3, 'test4'),
             ($4, 'test4')
       RETURNING id`,
-      [projectIds[0], projectIds[1], projectIds[0], projectIds[1]]);
+    [projectIds[0], projectIds[1], projectIds[0], projectIds[1]]);
 
   matchIds.splice(0, 0, ...matches.rows.map(r => r.id));
-  // console.log("***Matches id's are: ", matchIds);
 
 
   const project_members_added = await db.query(
-      `INSERT INTO project_members (project_id, username)
+    `INSERT INTO project_members (project_id, username)
       VALUES ($1, 'test4'),
             ($2, 'test3'),
             ($3, 'test3'),
@@ -70,21 +68,20 @@ async function commonnBeforeAll(){
       RETURNING id`,
     [projectIds[0], projectIds[0], projectIds[1], projectIds[1]]);
 
-    // effectively connects project_id 1 => users 4 and 3
-    // project_2 => users 3 and 4
-    projectMemberIds.splice(0, 0, ...project_members_added.rows.map(r => r.id));
-    // console.log("***Project member id's are: ", projectMemberIds);
+  // effectively connects project_id 1 => users 4 and 3
+  // project_2 => users 3 and 4
+  projectMemberIds.splice(0, 0, ...project_members_added.rows.map(r => r.id));
 
   const messages = await db.query(
-      `INSERT INTO messages (message_from, message_to, body, sent_at)
+    `INSERT INTO messages (message_from, message_to, body, sent_at)
       ValUES 
           ($1, $2, 'This is from user 3 to user 4', current_timestamp),
           ($3, $4, 'This is from user 4 to user 3', current_timestamp)
           RETURNING id`,
-          ['test3', 'test4', 'test4', 'test3']);
+    ['test3', 'test4', 'test4', 'test3']);
 
-      messageIds.splice(0, 0, ...messages.rows.map(r => r.id));
-  };
+  messageIds.splice(0, 0, ...messages.rows.map(r => r.id));
+};
 
 
 // Initiates/starts transaction
@@ -98,7 +95,7 @@ async function commonAfterEach() {
 };
 
 // closes connection to server.
-async function afterAllEnd(){
+async function afterAllEnd() {
   await db.end();
 };
 

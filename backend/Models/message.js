@@ -19,7 +19,6 @@ class Message {
 
     if (!validUserToCheck.rows[0]) throw new BadRequestError();
 
-    console.log("***** messsage_from, {message_to, body}", message_from, message_to, body)
     // passing in the SQL native current_timestamp func for msg created at.
     const newMessage = await db.query(
       `INSERT INTO messages (
@@ -64,7 +63,6 @@ class Message {
   // View individual message by id. AUTH REQUIRED. Returns id, message_from, message_to, body, sent_at.
 
   static async viewMessageID({ message_id, username }) {
-    console.log(`Looking at msg w/ id ${message_id}`);
 
     const message = await db.query(
       `SELECT messages.id,

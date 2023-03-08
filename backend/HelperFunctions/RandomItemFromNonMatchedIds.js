@@ -3,8 +3,6 @@ const db = require("../db");
 
 function RandomItemFromNonMatchedIds(nonMatchedProjIds) {
 
-  console.log("B4 SHUFFLE:", nonMatchedProjIds)
-
   // Shuffle the array 
   function shuffleArray(arrayToShuffle) {
     return arrayToShuffle.sort(() => Math.random() - 0.5);
@@ -12,13 +10,10 @@ function RandomItemFromNonMatchedIds(nonMatchedProjIds) {
 
   shuffleArray(nonMatchedProjIds);
 
-  console.log(`AFTER SHUFFLE ${nonMatchedProjIds}`)
-
   // Get a random index to grab.
   let randomID = Math.floor(Math.random() * nonMatchedProjIds.length);
 
   let itemToDisplay = nonMatchedProjIds[randomID];
-  console.log(`Getting ${itemToDisplay}`)
 
   return itemToDisplay;
 };

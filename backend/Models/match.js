@@ -135,7 +135,6 @@ class Matches {
   // Confirm user sending request has matched with the project_id.
 
   static async confirmUserMatched(username, project_id) {
-    console.log(`Confriming ${username} matched ${project_id}`);
 
     let matchedUser = await db.query(
       `SELECT username,
@@ -146,7 +145,6 @@ class Matches {
     );
 
     let confirmedMatch = matchedUser.rows[0];
-    console.log("!!!!!!!!!!", confirmedMatch);
 
     if (!confirmedMatch) {
       throw new UnauthorizedError();

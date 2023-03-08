@@ -1,11 +1,11 @@
 const db = require("../db");
-const {ExpressError, UnauthorizedError, NotFoundError, BadRequestError} = require("../ErrorHandling/expressError");
+const { ExpressError, UnauthorizedError, NotFoundError, BadRequestError } = require("../ErrorHandling/expressError");
 const Match = require("./match");
-const {commonnBeforeAll,
+const { commonnBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   afterAllEnd,
-  projectIds, matchIds} = require("./forAllTests");
+  projectIds, matchIds } = require("./forAllTests");
 
 
 // Using the jest testing functions pass in the steps needed to open/close serv.
@@ -16,9 +16,9 @@ afterAll(afterAllEnd); //close connection to db
 
 // Add match.***************************************** 
 
-describe("Add match", function (){
-  test("Add valid match", async function (){
-    let newMatch = await Match.addMatch({username: 'test1', project_id: projectIds[3]});
+describe("Add match", function () {
+  test("Add valid match", async function () {
+    let newMatch = await Match.addMatch({ username: 'test1', project_id: projectIds[3] });
 
     expect(newMatch.project_id).toEqual(projectIds[3]);
     expect(newMatch.username).toEqual('test1');
@@ -29,8 +29,6 @@ describe("Add match", function (){
       WHERE project_id = $1`,
       [projectIds[3]]
     );
-
-    console.log(dbCheck.rows);
 
     // The project owner & new match 
     expect(dbCheck.rows.length).toEqual(2);

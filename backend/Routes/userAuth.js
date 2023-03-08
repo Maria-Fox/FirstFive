@@ -14,10 +14,8 @@ const createJWT = require("../HelperFunctions/Tokens");
 
 router.post("/register", async function (req, res, next) {
   try {
-    console.log(req.body, "THIS IS BOD")
     let fieldInputs = jsonschema.validate(req.body, registerUserSchema);
     // if input is not valid notify user of errors.
-    console.log("#$%#$%#$%", fieldInputs.valid, "@#$@#$@#$@#");
     if (!fieldInputs.valid) {
       // the error stack is harder for a user to understand. Keeping this in mind displaying error w/ requirements for user readability.
       // const inputErrors = fieldInputs.errors.map(e => e.stack);
@@ -46,7 +44,6 @@ router.post("/login", async function (req, res, next) {
 
     let authUser = await User.authenticateUser(req.body);
     let signedJWT = createJWT(authUser);
-    console.log(`Returning ${signedJWT}, as token`)
     return res.status(200).json({ signedJWT });
   } catch (e) {
     return next(e);

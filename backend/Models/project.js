@@ -46,8 +46,6 @@ class Project {
       [newProject.id, owner_username]
     );
 
-    // console.log(newProject, "***********", "matched", userMatchedToProj)
-
     return newProject;
   };
 
@@ -79,7 +77,6 @@ class Project {
   // View single project proposal. AUTH REQUIRED. Returns project id, owner_username, name, project_desc, timeframe.
 
   static async viewSingleProject({ project_id }) {
-    console.log("VIEWING ***", project_id)
 
     let singleProjResult = await db.query(
       `SELECT id,
@@ -159,8 +156,6 @@ class Project {
     // send off the db request to update adding in values & the actual co_username. Last to be added so it's the values.length+1
     let updatedProjResult = await db.query(sqlSyntaxQuery, [...values, project_id.project_id]);
 
-    console.log("@#$%(*%^", updatedProjResult.rows);
-
     let updatedProjData = updatedProjResult.rows[0];
 
     if (!updatedProjData) throw new NotFoundError(`Project request does not exist.`);
@@ -213,12 +208,9 @@ class Project {
       [username]
     );
 
-    console.log(matchedProjIds.rows.map(proj => proj.project_id), "********");
-
     let avoidIds = matchedProjIds.rows.map(match => match.project_id) || "";
     // need to remove from array
     avoidIds = `(${avoidIds})`;
-    console.log(`${avoidIds}`);
 
     let projectResults = await db.query(
       `SELECT id,
@@ -289,7 +281,6 @@ class Project {
     // need to remove from array
 
     avoidIds = `(${avoidIds})`;
-    // console.log(` avoid these ids : ${avoidIds}`);
 
     // Grab all ids user has NOT matched with.
     let arrayOfProjectsToMatch = await db.query(
@@ -304,7 +295,6 @@ class Project {
     if (arrayOfProjectsToMatch.length == 0) throw BadRequestError("You have matched all projects!")
 
     let itemToDisplay = RandomItemFromNonMatchedIds(arrayOfProjectsToMatch);
-    console.log(itemToDisplay, "DISPLAY THIS")
 
     let randomProjData = await db.query(
       `SELECT id,
@@ -318,7 +308,6 @@ class Project {
       [itemToDisplay]
     );
 
-    console.log(randomProjData.rows)
     return [randomProjData.rows[0]];
   };
 

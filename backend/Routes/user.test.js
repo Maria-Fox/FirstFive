@@ -17,22 +17,20 @@ beforeEach(commonBeforeEach); //start db
 afterEach(commonAfterEach); // rollback the previous changes
 afterAll(afterAllEnd); //close connection to db
 
-let user3Token = createJWT({username: "test3"});
-let user4Token = createJWT({username: "test4"});
-console.log(user3Token, "********");
-console.log(jwt.verify(user3Token, SECRET_KEY))
+let user3Token = createJWT({ username: "test3" });
+let user4Token = createJWT({ username: "test4" });
 
 
 // all routes prefixed with "/users"
 
 /************************************** GET /users/all */
 
-describe("/GET View all users", function (){
-  test("/GET valid user requesting all", async function (){
+describe("/GET View all users", function () {
+  test("/GET valid user requesting all", async function () {
     let allUsers = await request(app)
-    .get("/users/all")
-    .set("authorization", `Bearer ${user3Token}`);
-    
+      .get("/users/all")
+      .set("authorization", `Bearer ${user3Token}`);
+
     expect(allUsers.body).toEqual({
       allUsers: [
         {
@@ -59,22 +57,22 @@ describe("/GET View all users", function (){
     });
   });
 
-  test("Invalid credentials/ user request", async function (){
-      let allUsersRes = await request(app)
-          .get("/users/all");
-  
-      expect(allUsersRes.statusCode).toEqual(401);
+  test("Invalid credentials/ user request", async function () {
+    let allUsersRes = await request(app)
+      .get("/users/all");
+
+    expect(allUsersRes.statusCode).toEqual(401);
   });
-  
+
 });
 
 /************************************** GET /users/:username */
 
-describe("/GET :username", function (){
+describe("/GET :username", function () {
   test("Returns same user", async function () {
     const resp = await request(app)
-        .get(`/users/test3`)
-        .set("authorization", `Bearer ${user3Token}`);
+      .get(`/users/test3`)
+      .set("authorization", `Bearer ${user3Token}`);
     expect(resp.body).toEqual({
       userData: {
         username: "test3",
@@ -85,8 +83,8 @@ describe("/GET :username", function (){
 
   test("Returns different user", async function () {
     const resp = await request(app)
-        .get(`/users/test4`)
-        .set("authorization", `Bearer ${user3Token}`);
+      .get(`/users/test4`)
+      .set("authorization", `Bearer ${user3Token}`);
     expect(resp.body).toEqual({
       userData: {
         username: "test4",
@@ -97,14 +95,14 @@ describe("/GET :username", function (){
 
   test("Denies unauthorized user", async function () {
     const resp = await request(app)
-        .get(`/users/test3`);
+      .get(`/users/test3`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("Returns not found if user not found", async function () {
     const resp = await request(app)
-        .get(`/users/fakeUser`)
-        .set("authorization", `Bearer ${user3Token}`);
+      .get(`/users/fakeUser`)
+      .set("authorization", `Bearer ${user3Token}`);
     expect(resp.statusCode).toEqual(404);
   });
 });
@@ -112,16 +110,16 @@ describe("/GET :username", function (){
 
 /************************************** PATCH /users/:username */
 
-describe("PATCH /users/:username", function() {
+describe("PATCH /users/:username", function () {
   test("Updates auth user", async function () {
 
     const resp = await request(app)
-        .patch(`/users/test3`)
-        .send({
-          username: "test3",
-          bio: "New Bio",
-        })
-        .set("authorization", `Bearer ${user3Token}`);
+      .patch(`/users/test3`)
+      .send({
+        username: "test3",
+        bio: "New Bio",
+      })
+      .set("authorization", `Bearer ${user3Token}`);
     expect(resp.body).toEqual({
       userData: {
         username: "test3",
@@ -134,36 +132,34 @@ describe("PATCH /users/:username", function() {
   test("Deny updating unauth user", async function () {
 
     const resp = await request(app)
-        .patch(`/users/test3`)
-        .send({
-          username: "test3",
-          bio: "New Bio",
-        })
-        .set("authorization", `Bearer `);
-        expect(resp.statusCode).toEqual(401);
-      });
+      .patch(`/users/test3`)
+      .send({
+        username: "test3",
+        bio: "New Bio",
+      })
+      .set("authorization", `Bearer `);
+    expect(resp.statusCode).toEqual(401);
+  });
 
   test("Returns bad request error if missing fields", async function () {
 
     const resp = await request(app)
-        .patch(`/users/test3`)
-        .send({
-          bio: "New Bio",
-        })
-        .set("authorization", `Bearer ${user3Token}`);
-        expect(resp.statusCode).toEqual(400);
-      });
+      .patch(`/users/test3`)
+      .send({
+        bio: "New Bio",
+      })
+      .set("authorization", `Bearer ${user3Token}`);
+    expect(resp.statusCode).toEqual(400);
+  });
 });
 
 /************************************** DELETE /users/:username */
 
-describe("Delete auth user acc", function (){
-  test("Delete auth user acct", async function (){
+describe("Delete auth user acc", function () {
+  test("Delete auth user acct", async function () {
     let resp = await request(app)
-    .delete(`/users/test3`)
-    .set({"authorization": `Bearer ${user3Token}`});
-
-    console.log(resp.text)
+      .delete(`/users/test3`)
+      .set({ "authorization": `Bearer ${user3Token}` });
 
     expect(resp.statusCode).toEqual(200);
     expect(resp.body).toEqual({
@@ -171,12 +167,10 @@ describe("Delete auth user acc", function (){
     });
   });
 
-  test("Deny deleting user to unauth user", async function (){
+  test("Deny deleting user to unauth user", async function () {
     let resp = await request(app)
-    .delete(`/users/test4`)
-    .set({"authorization": `Bearer ${user3Token}`});
-
-    console.log(resp.text)
+      .delete(`/users/test4`)
+      .set({ "authorization": `Bearer ${user3Token}` });
 
     expect(resp.statusCode).toEqual(401);
   });

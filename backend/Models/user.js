@@ -154,8 +154,6 @@ class User {
                       email,
                       bio`;
 
-    // console.log(sqlSyntaxQuery, [...values, username.username]);
-
     let updateResult = await db.query(sqlSyntaxQuery, [...values, username.username]);
 
     let user = updateResult.rows[0];

@@ -16,26 +16,25 @@ afterEach(commonAfterEach); // rollback the previous changes
 afterAll(afterAllEnd); //close connection to db
 
 // To be matched
-let user1Token = createJWT({username: "test1"});
-let user2Token = createJWT({username: "test2"});
+let user1Token = createJWT({ username: "test1" });
+let user2Token = createJWT({ username: "test2" });
 
 // Already matched from common data / when users create a project they are automatically matched to the project. 
 
-let user3Token = createJWT({username: "test3"});
-let user4Token = createJWT({username: "test4"});
+let user3Token = createJWT({ username: "test3" });
+let user4Token = createJWT({ username: "test4" });
 
 // All routes prefixed with /matches
 
 /************************************** POST /matches/add/:username/:project_id */
 
 describe("Creating a match", function () {
-  test("Creating valid match w/ auth user", async function (){
+  test("Creating valid match w/ auth user", async function () {
     // connects user 1 to project 3
     let project_id = projectIds[0];
-    console.log("Project is : ****", project_id)
     let resp = await request(app)
-    .post(`/matches/add/test1/${project_id}`)
-    .set({"authorization": `Bearer ${user1Token}`})
+      .post(`/matches/add/test1/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` })
 
     expect(resp.body).toEqual({
       id: expect.any(Number),
@@ -44,20 +43,20 @@ describe("Creating a match", function () {
     })
   });
 
-  test("Reject match if already matched", async function (){
+  test("Reject match if already matched", async function () {
     let project_id = projectIds[0];
     let resp = await request(app)
-    .post(`/matches/add/test3/${project_id}`)
-    .set({"authorization": `Bearer ${user3Token}`})
+      .post(`/matches/add/test3/${project_id}`)
+      .set({ "authorization": `Bearer ${user3Token}` })
 
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("Rejects unauth user sending match req", async function (){
+  test("Rejects unauth user sending match req", async function () {
     let project_id = projectIds[0];
     let resp = await request(app)
-    .post(`/matches/add/test4/${project_id}`)
-    .set({"authorization": `Bearer ${user1Token}`})
+      .post(`/matches/add/test4/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` })
 
     expect(resp.statusCode).toEqual(401)
   });
@@ -66,13 +65,13 @@ describe("Creating a match", function () {
 /************************************** GET /mathes/view/:username/all */
 // Requires user login
 
-describe("View matches for auth user", function (){
+describe("View matches for auth user", function () {
 
-  test("Auth user requests own matches", async function (){
+  test("Auth user requests own matches", async function () {
     let project_id = projectIds[0];
     let resp = await request(app)
-    .get(`/matches/view/test3/all`)
-    .set({"authorization": `Bearer ${user3Token}`});
+      .get(`/matches/view/test3/all`)
+      .set({ "authorization": `Bearer ${user3Token}` });
 
     // User is instantly matched w/ projects they create. Created in common test file.
     expect(resp.statusCode).toEqual(200);
@@ -90,19 +89,19 @@ describe("View matches for auth user", function (){
     )
   });
 
-  test("Invalid user requests user matches", async function (){
+  test("Invalid user requests user matches", async function () {
     let resp = await request(app)
-    .get(`/matches/view/test3/all`)
-    .set({"authorization": `Bearer ${user1Token}`});
+      .get(`/matches/view/test3/all`)
+      .set({ "authorization": `Bearer ${user1Token}` });
 
     // Unauth user response error
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("Unauth user requests user matches", async function (){
+  test("Unauth user requests user matches", async function () {
     let resp = await request(app)
-    .get(`/matches/view/test3/all`)
-    .set({"authorization": `Bearer fakeToken`});
+      .get(`/matches/view/test3/all`)
+      .set({ "authorization": `Bearer fakeToken` });
 
     // Unauth user response error
     expect(resp.statusCode).toEqual(401);
@@ -130,29 +129,29 @@ describe("View matches for auth user", function (){
 //   })
 // });
 
-describe("Unmatch from valid project_id", function (){
-  test("User unmatches from project", async function (){
+describe("Unmatch from valid project_id", function () {
+  test("User unmatches from project", async function () {
     let project_id = projectIds[1];
     let resp = await request(app)
-        .post(`/matches/remove/test4/${project_id}`)
-        .set({authorization: `Bearer ${user4Token}`});
+      .post(`/matches/remove/test4/${project_id}`)
+      .set({ authorization: `Bearer ${user4Token}` });
 
     expect(resp.statusCode).toEqual(200);
   });
 
-  test("Invalid req - no authorization", async function (){
+  test("Invalid req - no authorization", async function () {
     let project_id = projectIds[0];
     let resp = await request(app)
-        .post(`/matches/remove/test4/${project_id}`);
+      .post(`/matches/remove/test4/${project_id}`);
 
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("Invalid project_id", async function (){
+  test("Invalid project_id", async function () {
     let project_id = 7777;
     let resp = await request(app)
-        .post(`/matches/remove/test4/${project_id}`)
-        .set({authorization: `Bearer ${user1Token}`});
+      .post(`/matches/remove/test4/${project_id}`)
+      .set({ authorization: `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(401);
   });

@@ -49,28 +49,11 @@ describe("Create a project", function () {
     expect(dbRequest.rows[0].github_repo).toEqual("https:github/test");
     expect(dbRequest.rows[0].owner_username).toEqual(newProjData.owner_username);
 
-    console.log(projId, "********")
     let userMatchedToProj = await Matches.viewProjectUserMatches(projId);
-    console.log(userMatchedToProj);
     expect(userMatchedToProj.rows.length).toEqual(1);
   });
 
-  // test("Return error if duplicate project name is submitted", async function (){
-  //   let dupProjData = {
-  //     "owner_username": "test1",
-  //     "name": "Proj1",
-  //     "project_desc": "Duplicated from test seed data in forAllTests.js",
-  //     "timeframe": "1 day",
-  //     "github_repo": "should return error"
-  //   };
 
-  //   try {
-  //     let dupRequest = await Project.createProject(dupProjData);
-  //     console.log(dupRequest, "****")
-  //   } catch(e){
-  //     expect(e instanceof ExpressError).toBeTruthy();
-  //   };
-  // });
 });
 
 // View all projects.***************************************** 
