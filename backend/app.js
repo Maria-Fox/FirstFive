@@ -7,8 +7,7 @@ const projectRoutes = require("./Routes/projects");
 const projectMemberRoutes = require("./Routes/projectMembers");
 const matchRoutes = require("./Routes/matches");
 const messageRoutes = require("./Routes/messages");
-const {ExpressError} = require("./ErrorHandling/expressError");
-const {authenticateJWT, ensureLoggedIn} = require("./Middleware/auth");
+const { authenticateJWT } = require("./Middleware/auth");
 
 // process.env.NODE_ENV = "test";
 
@@ -23,20 +22,19 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/matches", matchRoutes);
-app.use("/projectmembers",projectMemberRoutes);
+app.use("/projectmembers", projectMemberRoutes);
 app.use("/messages", messageRoutes);
 
-app.get("/works", async function (req,res,err){
-  return res.status(200).json({"worked": "like a charm"})
+app.get("/works", async function (req, res, err) {
+  return res.status(200).json({ "worked": "like a charm" })
 });
 
 // Generic error handler for cases not explicitly caught."
-app.use(function (err, req, res, next){
-  if(process.env.NODE_ENV !== "test") console.log(err.stack);
+app.use(function (err, req, res, next) {
   const status = err.status || 500;
   const message = err.message;
 
-  return res.status(status).json({error: {message, status}});
+  return res.status(status).json({ error: { message, status } });
 });
 
 

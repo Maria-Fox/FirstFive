@@ -112,13 +112,6 @@ async function commonnBeforeAll() {
   // messageIds[0] = await Message.createMessage(msgFrom3To4);
   // messageIds[1] = await Message.createMessage(msgFrom4To3);
 
-  console.log({
-    projectIds,
-    //   projectMemberIds,
-    //   matchIds,
-    // messageIds
-  });
-
 };
 
 
