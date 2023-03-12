@@ -1,8 +1,7 @@
 const db = require("../db");
-const { NotFoundError, ExpressError, BadRequestError } = require("../ErrorHandling/ExpressError");
-const Project = require("./project");
+const { NotFoundError, ExpressError, BadRequestError } = require("../ErrorHandling/expressError");
 const Project_Member = require("./projectMember");
-const { commonnBeforeAll, commonBeforeEach, commonAfterEach, afterAllEnd, projectIds, projectMemberIds } = require("./forAllTests");
+const { commonnBeforeAll, commonBeforeEach, commonAfterEach, afterAllEnd, projectIds } = require("./forAllTests");
 
 // Using the jest testing functions pass in the steps needed to open/close serv.
 beforeAll(commonnBeforeAll); // add in test data
