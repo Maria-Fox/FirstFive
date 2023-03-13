@@ -1,6 +1,35 @@
-To initialize & seed the databases please complete the follwoing:
+# The API/ Backend for FirstFive
 
-cd / backend
+## Introductory information 
+
+- Thi API is deployed through Heroku and can be interacted with using Insomnia, or another similar service.
+-  To view the frontend repo please visit this [repo](https://github.com/Maria-Fox/FirstFive-Frontend).
+
+## Tech Stack
+
+The backend was built using Express, Node, Sequelize, and JSON web tokens. Passwords abd encrypted using BCRYPT.
+
+## Utilizing Routes
+
+- The base URL for requests is: https://firstfive.herokuapp.com
+
+Most routes are private and require a user token. To begin:
+POST `/auth/register`
+
+` {
+  "username" : "sampleUser",
+  "password: "password123",
+  "email:" "email@sample.com",
+  "bio": "CS student"
+}
+`
+
+The route will return a valid user token. For all remaining routes please ensure a valid token is in the request header for propper authentication. The login route will also provide a valid token.
+
+## To utilize in development.
+
+To initialize & seed the databases please complete the following:
+
 run the below in your terminal.
 ```psql < firstFiveDB.sql```
 
