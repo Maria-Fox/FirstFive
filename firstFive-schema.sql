@@ -14,16 +14,10 @@ CREATE TABLE messages (
   read_at timestamp with time zone
 );
 
--- CREATE TABLE likes (
---   id SERIAL PRIMARY KEY,
---   liker_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE,
---   liked_username TEXT NOT NULL REFERENCES users ON DELETE CASCADE
--- );
-
 CREATE TABLE projects (
   id SERIAL PRIMARY KEY,
   owner_username TEXT NOT NULL REFERENCES users on DELETE CASCADE ON UPDATE CASCADE,
-  name VARCHAR(20) UNIQUE NOT NULL,
+  name VARCHAR (50) UNIQUE NOT NULL,
   project_desc TEXT NOT NULL,
   timeframe TEXT NOT NULL,
   github_repo TEXT 
