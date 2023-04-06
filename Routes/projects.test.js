@@ -15,16 +15,16 @@ beforeEach(commonBeforeEach); //start db
 afterEach(commonAfterEach); // rollback the previous changes
 afterAll(afterAllEnd); //close connection to db
 
-let user1Token = createJWT({username: "test1"});
-let user3Token = createJWT({username: "test3"});
+let user1Token = createJWT({ username: "test1" });
+let user3Token = createJWT({ username: "test3" });
 
 /************************************** POST /projects/new */
 
-describe("Creating a new project", function (){
+describe("Creating a new project", function () {
 
-  test("Auth user creating a new project", async function (){
+  test("Auth user creating a new project", async function () {
 
-    let newProjData = { 
+    let newProjData = {
       owner_username: 'test1',
       name: "Testing",
       project_desc: "Description here",
@@ -33,60 +33,60 @@ describe("Creating a new project", function (){
     };
 
     let resp = await request(app)
-    .post("/projects/new")
-    .send(newProjData)
-    .set({authorization: `Bearer ${user1Token}`});
+      .post("/projects/add")
+      .send(newProjData)
+      .set({ authorization: `Bearer ${user1Token}` });
 
     let newProjId = resp.body.id;
 
     expect(resp.body).toEqual({
       id: newProjId,
-      owner_username : 'test1', 
+      owner_username: 'test1',
       name: 'Testing',
-      project_desc: 'Description here', 
-      timeframe: 'Short and easy!', 
+      project_desc: 'Description here',
+      timeframe: 'Short and easy!',
       github_repo: 'https:github.com/firstfive'
     });
 
     // confirm only the user who created the proj is matched at initialization.
     let matchConfirmation = await request(app)
-        .get(`/matches/view/test1/all`)
-        .set({authorization: `Bearer ${user1Token}`});
+      .get(`/matches/view/test1/all`)
+      .set({ authorization: `Bearer ${user1Token}` });
 
     expect(matchConfirmation.statusCode).toEqual(200);
     expect(matchConfirmation.body).toEqual([{
-          project_id: newProjId,
-          project_desc: 'Description here',
-          name: 'Testing',
-          owner_username: 'test1',
-          timeframe: 'Short and easy!',
-          github_repo: 'https:github.com/firstfive'
+      project_id: newProjId,
+      project_desc: 'Description here',
+      name: 'Testing',
+      owner_username: 'test1',
+      timeframe: 'Short and easy!',
+      github_repo: 'https:github.com/firstfive'
     }])
   });
 
 
-  test("Unauth user creating a new project", async function (){
+  test("Unauth user creating a new project", async function () {
 
 
     let resp = await request(app)
-    .post("/projects/new")
-    .set({authorization: `Bearer `});
+      .post("/projects/add")
+      .set({ authorization: `Bearer ` });
 
     expect(resp.statusCode).toEqual(401)
   });
 
 
-  test("Missing field data returns error", async function (){
+  test("Missing field data returns error", async function () {
 
-    let newProjData = { 
+    let newProjData = {
       owner_username: 'test1',
       project_desc: "Description here",
     };
 
     let resp = await request(app)
-    .post("/projects/new")
-    .send(newProjData)
-    .set({authorization: `Bearer ${user1Token}`});
+      .post("/projects/add")
+      .send(newProjData)
+      .set({ authorization: `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(400)
   });
@@ -96,13 +96,13 @@ describe("Creating a new project", function (){
 
 // ************************************** GET /projects/all */
 
-describe("View all projects", function (){
+describe("View all projects", function () {
 
-  test("Valid user see's all projects", async function (){
-    
+  test("Valid user see's all projects", async function () {
+
     let resp = await request(app)
-          .get(`/projects/all`)
-          .set({"authorization": `Bearer ${user3Token}`});
+      .get(`/projects/all`)
+      .set({ "authorization": `Bearer ${user3Token}` });
 
     expect(resp.body).toEqual(
       [
@@ -127,11 +127,11 @@ describe("View all projects", function (){
     expect(resp.statusCode).toEqual(200);
   });
 
-  test("No auth user sees error", async function (){
-    
+  test("No auth user sees error", async function () {
+
     let resp = await request(app)
-          .get(`/projects/all`)
-          .set({"authorization": `Bearer $`});
+      .get(`/projects/all`)
+      .set({ "authorization": `Bearer $` });
 
     expect(resp.statusCode).toEqual(401);
   });
@@ -139,42 +139,42 @@ describe("View all projects", function (){
 
 /************************************** GET /projects/:project_id */
 
-describe("View valid project id data", function (){
+describe("View valid project id data", function () {
 
-  test("View valid project id from auth user", async function (){
+  test("View valid project id from auth user", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-            .get(`/projects/${project_id}`)
-            .set({"authorization": `Bearer ${user1Token}`});
+      .get(`/projects/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` });
 
     expect(resp.body).toEqual({
       id: project_id,
-      owner_username: "test3", 
+      owner_username: "test3",
       name: "Proj3",
-      project_desc: "The third proj", 
+      project_desc: "The third proj",
       timeframe: "3 days",
-      github_repo : "https:github.com/3"
+      github_repo: "https:github.com/3"
     });
     expect(resp.statusCode).toEqual(200);
   });
 
-  test("Invalid project id from auth user- returns 404" , async function (){
+  test("Invalid project id from auth user- returns 404", async function () {
     let project_id = 42222;
 
     let resp = await request(app)
-            .get(`/projects/${project_id}`)
-            .set({"authorization": `Bearer ${user1Token}`});
+      .get(`/projects/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("Unauth user returns 401" , async function (){
+  test("Unauth user returns 401", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-            .get(`/projects/${project_id}`)
-            .set({"authorization": `Bearer `});
+      .get(`/projects/${project_id}`)
+      .set({ "authorization": `Bearer ` });
 
     expect(resp.statusCode).toEqual(401);
   });
@@ -182,23 +182,23 @@ describe("View valid project id data", function (){
 
 /************************************** PATCH /projects/:project_id */
 
-describe("Update project if project_owner", function (){
+describe("Update project if project_owner", function () {
 
-  test("Update user project", async function (){
+  test("Update user project", async function () {
     let project_id = projectIds[0];
 
     let updatedProjData = {
       owner_username: "test3",
       name: "Proj3- UPDATED",
-      project_desc: "The third proj- UPDATED", 
+      project_desc: "The third proj- UPDATED",
       timeframe: "3 days- UPDATED",
-      github_repo : "https:github.com/3-UPDATED"
+      github_repo: "https:github.com/3-UPDATED"
     }
 
     let resp = await request(app)
-              .patch(`/projects/${project_id}`)
-              .set({"authorization": user3Token})
-              .send(updatedProjData);
+      .patch(`/projects/${project_id}`)
+      .set({ "authorization": user3Token })
+      .send(updatedProjData);
 
     expect(resp.body).toEqual({
       id: project_id,
@@ -206,47 +206,47 @@ describe("Update project if project_owner", function (){
     });
   });
 
-    test("Error- missing field update w/ auth user, 400", async function (){
+  test("Error- missing field update w/ auth user, 400", async function () {
     let project_id = projectIds[0];
 
     let updatedProjData = {
       timeframe: "3 days- UPDATED",
-      github_repo : "https:github.com/3-UPDATED"
+      github_repo: "https:github.com/3-UPDATED"
     }
 
     let resp = await request(app)
-              .patch(`/projects/${project_id}`)
-              .set({"authorization": user3Token})
-              .send(updatedProjData);
+      .patch(`/projects/${project_id}`)
+      .set({ "authorization": user3Token })
+      .send(updatedProjData);
 
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("Unauth user returns 401 - no login", async function (){
+  test("Unauth user returns 401 - no login", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-              .patch(`/projects/${project_id}`)
+      .patch(`/projects/${project_id}`)
 
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("Unauth user returns 401- not owner", async function (){
+  test("Unauth user returns 401- not owner", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-              .patch(`/projects/${project_id}`)
-                .set({"authorization": `Bearer ${user1Token}`});
+      .patch(`/projects/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("Invalid proj_id- returns 404", async function (){
+  test("Invalid proj_id- returns 404", async function () {
     let project_id = 4656564;
 
     let resp = await request(app)
-              .patch(`/projects/${project_id}`)
-              .set({"authorization": `Bearer ${user1Token}`});
+      .patch(`/projects/${project_id}`)
+      .set({ "authorization": `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(404);
   });
@@ -256,32 +256,32 @@ describe("Update project if project_owner", function (){
 
 /************************************** DELETE /projects/:project_id */
 
-describe("Deleting valid proj_id",function (){
-  test("Allow auth user + proj_owner to delete project", async function (){
+describe("Deleting valid proj_id", function () {
+  test("Allow auth user + proj_owner to delete project", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-              .delete(`/projects/${project_id}`)
-              .set({authorization: `Bearer ${user3Token}`});
+      .delete(`/projects/${project_id}`)
+      .set({ authorization: `Bearer ${user3Token}` });
 
     expect(resp.statusCode).toEqual(200);
   });
 
-  test("Deny unauth user to delete project", async function (){
+  test("Deny unauth user to delete project", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-              .delete(`/projects/${project_id}`);
+      .delete(`/projects/${project_id}`);
 
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("Deny NON-PROJECT_OWNER ability to delete project", async function (){
+  test("Deny NON-PROJECT_OWNER ability to delete project", async function () {
     let project_id = projectIds[0];
 
     let resp = await request(app)
-              .delete(`/projects/${project_id}`)
-              .set({authorization: `Bearer ${user1Token}`});
+      .delete(`/projects/${project_id}`)
+      .set({ authorization: `Bearer ${user1Token}` });
 
     expect(resp.statusCode).toEqual(401);
   });

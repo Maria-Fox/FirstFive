@@ -62,9 +62,6 @@ class Matches {
 
   static async viewProjectUserMatches(project_id) {
 
-    // Throws errors if project_id does not exist.
-    // let existingProject = await Project.viewSingleProject(project_id);
-
     let existingProject = await db.query(
       `SELECT owner_username AS owner_username,
               name,
@@ -129,7 +126,7 @@ class Matches {
   };
 
 
-  // ************** USED FOR MIDDLEARE **************
+  // ************** USED IN MIDDLEARE **************
   //  // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 
   // Confirm user sending request has matched with the project_id.

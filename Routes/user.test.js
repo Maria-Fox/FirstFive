@@ -23,49 +23,6 @@ let user4Token = createJWT({ username: "test4" });
 
 // all routes prefixed with "/users"
 
-/************************************** GET /users/all */
-
-describe("/GET View all users", function () {
-  test("/GET valid user requesting all", async function () {
-    let allUsers = await request(app)
-      .get("/users/all")
-      .set("authorization", `Bearer ${user3Token}`);
-
-    expect(allUsers.body).toEqual({
-      allUsers: [
-        {
-          username: 'test1',
-          email: "test1@email.com",
-          bio: "Bio-1"
-        },
-        {
-          username: 'test2',
-          email: "test2@email.com",
-          bio: "Bio-2"
-        },
-        {
-          username: 'test3',
-          email: "test3@email.com",
-          bio: "Bio-3"
-        },
-        {
-          username: 'test4',
-          email: "test4@email.com",
-          bio: "Bio-4"
-        }
-      ],
-    });
-  });
-
-  test("Invalid credentials/ user request", async function () {
-    let allUsersRes = await request(app)
-      .get("/users/all");
-
-    expect(allUsersRes.statusCode).toEqual(401);
-  });
-
-});
-
 /************************************** GET /users/:username */
 
 describe("/GET :username", function () {

@@ -1,5 +1,5 @@
 const db = require("../db");
-const { ExpressError, NotFoundError, UnauthorizedError, BadRequestError } = require("../ErrorHandling/expressError");
+const { ExpressError, NotFoundError, BadRequestError } = require("../ErrorHandling/expressError");
 
 class Message {
 

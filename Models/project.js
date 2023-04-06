@@ -1,7 +1,7 @@
 // const { resourceLimits } = require("worker_threads");
 const db = require("../db");
 const sqlForPartialUpdate = require("../HelperFunctions/SQLHelpers");
-const { ExpressError, NotFoundError, UnauthorizedError, BadRequestError } = require("../ErrorHandling/expressError");
+const { ExpressError, NotFoundError, BadRequestError } = require("../ErrorHandling/expressError");
 const RandomItemFromNonMatchedIds = require("../HelperFunctions/RandomItemFromNonMatchedIds")
 
 
@@ -14,7 +14,7 @@ class Project {
   static async createProject({ owner_username, name, project_desc, timeframe, github_repo }) {
 
     let existingProjName = await db.query(
-      `SELECT * 
+      `SELECT id
       FROM projects 
       WHERE name= $1`,
       [name]
@@ -37,7 +37,7 @@ class Project {
 
     let newProject = newProjectRes.rows[0];
 
-    // user who creates the project is instantly matched to the project for furthher requests.
+    // user who creates the project is instantly matched to the project for further requests.
 
     let userMatchedToProj = await db.query(
       `INSERT INTO matches (project_id, username)
@@ -125,16 +125,6 @@ class Project {
 
   static async updateProject(project_id, reqData) {
 
-    // See if project name already exists.IF so, notify user to pick a new name.
-
-    // let existingProjName = await db.query(`
-    //     SELECT name 
-    //     FROM projects
-    //     WHERE name = $1`,
-    //   [reqData.name]);
-
-    // if (existingProjName.rows[0]) throw new BadRequestError("Existing project name. Please choose a new name.");
-
     // returns detrsuctured object where dbColumnsToUpdate holds parameterized queries. EX: dbColumnsToUpdate{project_desc = $1} 
     const { dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
 
@@ -198,7 +188,9 @@ class Project {
     return projectData.rows[0];
   };
 
-  // Change projects displayed as of 1/29 ********************************
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  //  Get the uprojects a given user has NOT matched with so they may match.
 
   static async viewNonMatchedProjs(username) {
     let matchedProjIds = await db.query(
@@ -231,7 +223,9 @@ class Project {
     return allProjects;
   };
 
-  // Carousel Display of 2/9 ********************************
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+  //  Return a random non matched projet for user to review at a time.
 
   static async carouselProjects(username) {
 
@@ -273,8 +267,7 @@ class Project {
     };
 
 
-    // *****If user HAS EXISTING MATCHES proceed with below.
-
+    // *****If user HAS EXISTING MATCHES proceed with below
 
     // Grab all the ids user HAS matched with.
     let avoidIds = matchedProjIds.rows.map(match => match.project_id) || "";
@@ -285,14 +278,14 @@ class Project {
     // Grab all ids user has NOT matched with.
     let arrayOfProjectsToMatch = await db.query(
       `SELECT id
-      FROM projects
-      WHERE id NOT IN ${avoidIds}`
+          FROM projects
+          WHERE id NOT IN ${avoidIds}`
     );
 
     arrayOfProjectsToMatch = arrayOfProjectsToMatch.rows.map(proj => proj.id);
 
     // If there's nothing returned user matched all projects.
-    if (arrayOfProjectsToMatch.length == 0) throw BadRequestError("You have matched all projects!")
+    if (arrayOfProjectsToMatch.length == 0) return null;
 
     let itemToDisplay = RandomItemFromNonMatchedIds(arrayOfProjectsToMatch);
 

@@ -70,25 +70,10 @@ class User {
     throw new UnauthorizedError("Invalid username or password.");
   }
 
-  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-
-  // Find ALL users. AUTH REQUIRED. Returns user's: username, email, bio.
-
-  static async findAllUsers() {
-
-    let allUsersResult = await db.query(
-      `SELECT username, email, bio
-        FROM users 
-        ORDER BY username`
-    );
-
-    let allUsers = allUsersResult.rows;
-    return allUsers;
-  };
 
   // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Find user based on username. AUTH REQUIRED. Returns user details or no user found Error.
+  // Find user based on username. AUTH REQUIRED. Returns user username + bio or no user found Error.
 
   static async findUser({ username }) {
 
@@ -138,7 +123,7 @@ class User {
     };
 
     // destructures return object. Ex: 
-    // { dbColumnsToUpdate: '"username"=$1,  =$2',
+    // { dbColumnsToUpdate: '"username"=$1,  ...',
     // values: ["SoftwareDevUser1", "9165286431"] }
     const { dbColumnsToUpdate, values } = sqlForPartialUpdate(reqData);
 

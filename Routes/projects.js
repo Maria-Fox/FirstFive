@@ -9,7 +9,7 @@ const { BadRequestError, UnauthorizedError } = require("../ErrorHandling/express
 // all routes are prefixed with "/projects". LOGIN/ AUTH REQUIRED FOR ALL ROUTES.
 
 // Creates a project. Returns project id, owner_username, project_desc, timeframe.
-router.post("/new", ensureLoggedIn, async function (req, res, next) {
+router.post("/add", ensureLoggedIn, async function (req, res, next) {
   try {
     let validInputData = jsonschema.validate(req.body, newProjectSchema);
 
@@ -38,8 +38,9 @@ router.get("/all", ensureLoggedIn, async function (req, res, next) {
   };
 });
 
-// Returns the projects a user has NOT MATCHED WITH**
-router.get("/view", ensureLoggedIn, async function (req, res, next) {
+// Returns the projects (ALL) a user has NOT MATCHED WITH**
+// Returns project detail including: id, owner_username, name, project_desc, timeframe
+router.get("/unmatched", ensureLoggedIn, async function (req, res, next) {
   try {
     let allProjects = await Project.viewNonMatchedProjs(res.locals.user.username);
     return res.status(200).json(allProjects);
@@ -48,11 +49,12 @@ router.get("/view", ensureLoggedIn, async function (req, res, next) {
   };
 });
 
-// Returns the projects a user has NOT MATCHED WITH**
+// Returns a SINGLE project a user has NOT MATCHED WITH** 
+// Returns project detail including: id, owner_username, name, project_desc, timeframe
 router.get("/carousel", ensureLoggedIn, async function (req, res, next) {
   try {
-    let allProjects = await Project.carouselProjects(res.locals.user.username);
-    return res.status(200).json(allProjects);
+    let randomProject = await Project.carouselProjects(res.locals.user.username);
+    return res.status(200).json(randomProject);
   } catch (e) {
     next(e);
   };
@@ -108,10 +110,9 @@ router.delete("/:project_id",
   ensureLoggedIn, ensureProjectOwner,
   async function (req, res, next) {
     try {
-
-      let deleteConfirmation = await Project.delete(req.params.project_id, res.locals.user.username);
-
+      await Project.delete(req.params.project_id, res.locals.user.username);
       return res.status(200).json({ "Successful": "Deleted" });
+
     } catch (e) {
       return next(e);
     };

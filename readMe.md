@@ -5,9 +5,12 @@
 - Thi API is deployed through Heroku and can be interacted with using Insomnia, or another similar service.
 -  To view the frontend repo please visit this [repo](https://github.com/Maria-Fox/FirstFive-Frontend).
 
+## Note: App is currently being refactored for readability, performance, and visual improvements. Come back soon for updates!
+* Tests are also in the process of being refactored.
+
 ## Tech Stack
 
-The backend was built using Express, Node, Sequelize, and JSON web tokens. Passwords abd encrypted using BCRYPT.
+The backend was built using Express, Node, Sequelize, and JSON web tokens. Passwords and encrypted using BCRYPT.
 
 ## Utilizing Routes
 

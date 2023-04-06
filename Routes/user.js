@@ -1,23 +1,11 @@
 const router = require("express").Router();
 const User = require("../Models/user");
-const { ensureLoggedIn, ensureAuthUser, ensureMutualMatch, authenticateJWT } = require("../Middleware/auth");
+const { ensureLoggedIn, ensureAuthUser, ensureMutualMatch } = require("../Middleware/auth");
 const updateUserSchema = require("../Schemas/updateUser.json");
 const jsonschema = require("jsonschema");
-let { BadRequestError, UnauthorizedError } = require("../ErrorHandling/expressError");
-const confirmMutualMatches = require("../HelperFunctions/MutualMatch");
+let { BadRequestError } = require("../ErrorHandling/expressError");
 
 // Routes prefixed with "users/". AUTH REQUIRED FOR ALL.
-
-// Returns each users username, email, and bio.
-router.get("/all", ensureLoggedIn,
-  async function (req, res, next) {
-    try {
-      let allUsers = await User.findAllUsers()
-      return res.status(200).json({ "allUsers": allUsers });
-    } catch (e) {
-      return (e);
-    }
-  });
 
 // Return given user profile/ bio. Returns username and bio.
 router.get("/:username", ensureLoggedIn, ensureMutualMatch,
@@ -33,7 +21,7 @@ router.get("/:username", ensureLoggedIn, ensureMutualMatch,
   });
 
 // Used for users to view their own profile details. Returns username, email. bio.
-router.get("/:username/profile/view", ensureLoggedIn, ensureAuthUser,
+router.get("/:username/profile", ensureLoggedIn, ensureAuthUser,
   async function (req, res, next) {
     try {
       let userData = await User.viewProfileDetails(req.params.username);

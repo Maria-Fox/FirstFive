@@ -3,7 +3,7 @@ const User = require("./user");
 const { commonnBeforeAll,
   commonBeforeEach,
   commonAfterEach,
-  afterAllEnd} = require("./forAllTests");
+  afterAllEnd } = require("./forAllTests");
 const { BadRequestError, NotFoundError, UnauthorizedError } = require("../ErrorHandling/expressError");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 const bcryt = require("bcrypt");
@@ -22,9 +22,9 @@ afterAll(afterAllEnd); //close connection to db
 describe("Register user", function () {
   test("Valid input", async function () {
     let newUserData = {
-      username : "newestUser01",
+      username: "newestUser01",
       password: "pw123",
-      email : "testingtheemail@aol.com",
+      email: "testingtheemail@aol.com",
       bio: "bio - new"
     };
 
@@ -44,14 +44,14 @@ describe("Register user", function () {
 
     try {
       let dupUserData = {
-        username : "test1",
+        username: "test1",
         password: "pw123",
-        email : "testingtheemail@aol.com",
+        email: "testingtheemail@aol.com",
         bio: "bio - new"
       };
       let duplicateUserRes = await User.register(dupUserData);
 
-    } catch (e){
+    } catch (e) {
       expect(e instanceof BadRequestError).toBeTruthy();
     }
   });
@@ -61,49 +61,40 @@ describe("Register user", function () {
 // Checks users added into test db forAllTests.js
 
 describe("Authenticate user against db, return app results", function () {
-    test("Valid user credenetials return authorized user", async function () {
+  test("Valid user credenetials return authorized user", async function () {
 
-        let userData = {username: "test1", password: "firstPw"};
+    let userData = { username: "test1", password: "firstPw" };
 
-        let validUser = await User.authenticateUser(userData);
-        expect(validUser.username).toEqual(userData.username);
-    });
+    let validUser = await User.authenticateUser(userData);
+    expect(validUser.username).toEqual(userData.username);
+  });
 
-    test("Invalid user credentials return error", async function (){
-      try{
-        let userData = {username: "test1", password: "fake_pw_here"};
+  test("Invalid user credentials return error", async function () {
+    try {
+      let userData = { username: "test1", password: "fake_pw_here" };
 
-        let validUser = await User.authenticateUser(userData);
-      } catch(e){
-        expect(e instanceof UnauthorizedError).toBeTruthy();
-      };
-    });
-});
-
-describe("Return all users", function (){
-  test("Return all users in db.", async function (){
-    let allDBUsers = await User.findAllUsers();
-    expect(allDBUsers).toBeTruthy();
-    expect(allDBUsers.length).toEqual(4);
-    expect(allDBUsers[0].username).toEqual("test1");
+      let validUser = await User.authenticateUser(userData);
+    } catch (e) {
+      expect(e instanceof UnauthorizedError).toBeTruthy();
+    };
   });
 });
 
-describe("Return given user", function (){
-  test("Return info w/ valid username", async function (){
-    let user = {"username": "test1"}
+describe("Return given user", function () {
+  test("Return info w/ valid username", async function () {
+    let user = { "username": "test1" }
     let validUser = await User.findUser(user);
 
     expect(validUser.username).toEqual("test1");
     expect(validUser.bio).toEqual("Bio-1");
   });
 
-  test("Return error w/invalid username", async function (){
-    try{
-      let invalidUser = {"username": "madeUpUser"}
+  test("Return error w/invalid username", async function () {
+    try {
+      let invalidUser = { "username": "madeUpUser" }
       let invalidUserResult = await User.findUser(invalidUser);
 
-    }catch(e){
+    } catch (e) {
       expect(e instanceof NotFoundError).toBeTruthy();
     };
   });
@@ -113,28 +104,28 @@ describe("Return given user", function (){
 // Update User***************************************** 
 // route middleware exists so only auth users can update their profile.
 describe("Update user profile details based on columns for edits", function () {
-  test("Update valid columns w/ given data", async function (){
+  test("Update valid columns w/ given data", async function () {
 
     let fieldsToUpdate = {
-      "password" : "newPW",
+      "password": "newPW",
       "email": "newEmail",
-      "bio" : "new bio"
+      "bio": "new bio"
     };
 
-    let username = {username: 'test1'}
+    let username = { username: 'test1' }
 
-    let updatedUser = await User.updateUserProfile(username, fieldsToUpdate); 
+    let updatedUser = await User.updateUserProfile(username, fieldsToUpdate);
     expect(updatedUser).toEqual({
       "username": "test1",
       "email": "newEmail",
-      "bio" : "new bio"
+      "bio": "new bio"
     });
 
     let updatedQuery = await db.query(
-        `SELECT * 
+      `SELECT * 
         FROM users
         WHERE username = $1`,
-        ['test1']
+      ['test1']
     );
 
     expect(updatedQuery.rows[0].email).toEqual("newEmail");
@@ -143,12 +134,12 @@ describe("Update user profile details based on columns for edits", function () {
 });
 
 // Delete User***************************************** 
-describe("Delete user", function (){
+describe("Delete user", function () {
   // route middleware exists so only auth users can access method. Otherwise, they see an unauthorized error returned. Checked in middleware.
 
-  test("Delete valid user", async function (){
-    let deletedUser = await User.deleteUser({"username": "test1"});
-    
+  test("Delete valid user", async function () {
+    let deletedUser = await User.deleteUser({ "username": "test1" });
+
     let deletedUserConfirmation = await db.query(`
                                         SELECT * 
                                         FROM users 
