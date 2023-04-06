@@ -2,7 +2,7 @@
 
 ## Introductory information 
 
-- Thi API is deployed through Heroku and can be interacted with using Insomnia, or another similar service.
+- This API is deployed through Heroku and can be interacted with using Insomnia, or another similar service.
 -  To view the frontend repo please visit this [repo](https://github.com/Maria-Fox/FirstFive-Frontend).
 
 ## Note: App is currently being refactored for readability, performance, and visual improvements. Come back soon for updates!
