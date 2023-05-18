@@ -2,7 +2,7 @@
 
 ## Introductory information 
 
-- This API is deployed through Heroku and can be interacted with using Insomnia, or another similar service.
+- This API is deployed through Render.com and can be interacted with using Insomnia, or another similar service.
 -  To view the frontend repo please visit this [repo](https://github.com/Maria-Fox/FirstFive-Frontend).
 
 ## Note: App is currently being refactored for readability, performance, and visual improvements. Come back soon for updates!
@@ -14,7 +14,7 @@ The backend was built using Express, Node, Sequelize, and JSON web tokens. Passw
 
 ## Utilizing Routes
 
-- The base URL for requests is: https://firstfive.herokuapp.com
+- The base URL for requests is: https://firstfive.onrender.com
 
 Most routes are private and require a user token. To begin:
 POST `/auth/register`
